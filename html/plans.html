@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>7-day plans · AI Money Lab</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"><style>
+/* Layout: a fixed contents rail beside one reading column; rail becomes a scrolling strip on phones. */
+:root {
+  --paper: #fafaf8; --ink: #1d2430; --muted: #5b6473; --rule: #e1e4ea; --panel: #f1f3f6;
+  --accent: #24467a; --accent-soft: #e6ecf6; --ok: #1f7a45; --warn: #9a5b00;
+  --display: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #13161c; --ink: #e5e8ee; --muted: #9aa3b2; --rule: #2a303b; --panel: #1b1f27;
+  --accent: #93b2e8; --accent-soft: #1f2a3f; --ok: #6fd39a; --warn: #f0b860; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #13161c; --ink: #e5e8ee; --muted: #9aa3b2; --rule: #2a303b; --panel: #1b1f27;
+  --accent: #93b2e8; --accent-soft: #1f2a3f; --ok: #6fd39a; --warn: #f0b860; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.6 var(--body); }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.shell { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 3rem; max-width: 76rem; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 2.5rem 4rem; }
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 1.5rem); align-self: start; display: flex; flex-direction: column; gap: 1.25rem; }
+.brand { font-family: var(--display); font-size: 1.15rem; font-weight: 600; line-height: 1.25; color: var(--ink); text-decoration: none; }
+.brand small { display: block; font-family: var(--body); font-size: .78rem; font-weight: 400; color: var(--muted); margin-top: .25rem; }
+.toc { display: flex; flex-direction: column; gap: 2px; }
+.toc a, .toc button { display: block; text-align: left; padding: .38rem .6rem; border-radius: 6px; border: 0; background: none; font: 500 .9rem/1.35 var(--body); color: var(--muted); text-decoration: none; cursor: pointer; }
+.toc a:hover, .toc button:hover { color: var(--ink); background: var(--panel); }
+.toc [aria-current="page"] { color: var(--accent); background: var(--accent-soft); }
+.live { border-top: 1px solid var(--rule); padding-top: 1rem; display: flex; flex-direction: column; gap: .35rem; font-size: .85rem; }
+.live b { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+main { min-width: 0; }
+.doc { max-width: 46rem; }
+.doc h1 { font: 600 clamp(1.8rem, 4vw, 2.4rem)/1.15 var(--display); margin: 0 0 1rem; text-wrap: balance; letter-spacing: -.01em; }
+.doc h2 { font: 600 1.45rem/1.25 var(--display); margin: 2.4rem 0 .6rem; padding-top: 1.2rem; border-top: 1px solid var(--rule); text-wrap: balance; }
+.doc h3 { font: 600 1.08rem/1.35 var(--body); margin: 1.8rem 0 .4rem; }
+.doc h4 { font: 600 1rem/1.35 var(--body); margin: 1.4rem 0 .3rem; color: var(--muted); }
+.doc p, .doc li { max-width: 68ch; }
+.doc ul, .doc ol { padding-left: 1.3rem; }
+.doc li { margin: .2rem 0; }
+.doc hr { border: 0; border-top: 1px solid var(--rule); margin: 2rem 0; }
+.doc blockquote { margin: 1rem 0; padding: .75rem 1rem; border-left: 3px solid var(--accent); background: var(--panel); border-radius: 0 6px 6px 0; }
+.doc blockquote p { margin: .4rem 0; }
+.doc code { font: .86em var(--mono); background: var(--panel); padding: .1em .35em; border-radius: 4px; overflow-wrap: anywhere; }
+.doc pre { background: var(--panel); padding: 1rem; border-radius: 8px; overflow-x: auto; }
+.doc pre code { background: none; padding: 0; overflow-wrap: normal; }
+.tw { overflow-x: auto; margin: 1rem 0 1.4rem; border: 1px solid var(--rule); border-radius: 8px; }
+.doc table { border-collapse: collapse; width: 100%; font-size: .9rem; font-variant-numeric: tabular-nums; }
+.doc th, .doc td { text-align: left; vertical-align: top; padding: .5rem .7rem; border-bottom: 1px solid var(--rule); }
+.doc th { background: var(--panel); font-weight: 600; font-size: .8rem; color: var(--muted); white-space: nowrap; }
+.doc tr:last-child td { border-bottom: 0; }
+.doc td.num { text-align: right; }
+.tag { display: inline-block; font-size: .75rem; font-weight: 600; padding: 0 .5rem; border-radius: 999px; background: var(--panel); color: var(--muted); }
+.tag-payment { background: var(--accent-soft); color: var(--accent); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 1rem; margin: 1.5rem 0 2rem; }
+.card { display: flex; flex-direction: column; gap: .3rem; padding: 1rem 1.1rem; border: 1px solid var(--rule); border-radius: 8px; text-decoration: none; color: var(--ink); background: var(--paper); }
+.card:hover { border-color: var(--accent); }
+.card strong { font: 600 1.05rem/1.3 var(--display); color: var(--accent); }
+.card span { color: var(--muted); font-size: .9rem; }
+.lede { font-size: 1.08rem; color: var(--muted); max-width: 62ch; }
+.foot { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: .82rem; color: var(--muted); }
+@media (max-width: 860px) {
+  .shell { grid-template-columns: 1fr; gap: 1.5rem; padding-block: 1.25rem 3rem; }
+  .rail { position: static; }
+  .toc { flex-direction: row; overflow-x: auto; gap: 4px; padding-bottom: 4px; }
+  .toc a, .toc button { white-space: nowrap; }
+  .live { flex-direction: row; flex-wrap: wrap; gap: .4rem 1rem; }
+  .live b { width: 100%; }
+}
+</style></head>
+<body><div class="shell"><aside class="rail"><a class="brand" href="index.html">AI Money Lab<small>Research and prototypes</small></a><nav class="toc" aria-label="Documents"><a href="index.html">Overview</a><a href="report.html">Final report</a><a href="video.html">Video notes</a><a href="methods.html">The seven methods</a><a href="scorecard.html">Feasibility scorecard</a><a href="picks.html">Recommendations</a><a href="plans.html" aria-current="page">7-day plans</a><a href="outreach.html">Outreach templates</a><a href="tracker.html">Experiment tracker</a><a href="sources.html">Sources</a></nav><div class="live"><b>Live apps</b>
+<a href="https://repurpose-desk-flux.onrender.com" target="_blank" rel="noopener noreferrer">Repurpose Desk</a>
+<a href="https://site-makeover-kit.onrender.com" target="_blank" rel="noopener noreferrer">Site Makeover Kit</a>
+<a href="https://claude.ai/artifact/CdEKPZyz5YMNcks6iPKq8t" target="_blank" rel="noopener noreferrer">Scorecard chart</a>
+<a href="https://github.com/rubberly/ai-money-making-lab" target="_blank" rel="noopener noreferrer">GitHub repo</a></div></aside>
+<main><article class="doc"><h1>7-day validation plans</h1>
+<p>Goal: learn whether real people will <strong>pay</strong>, not just whether they say &quot;nice&quot;. Keep interest and payment separate in every count. Spend: $0. No ads, no bulk messaging, no bought lists.</p>
+<hr>
+<h2>Plan A: Content repurposing (Repurpose Desk)</h2>
+<p><strong>Who to approach.</strong> Creators with a <strong>weekly</strong> podcast or YouTube show, 10+ episodes, an audience of roughly 1k–50k, who <strong>sell something</strong> (coaching, consulting, a product, a B2B service), and who are <strong>missing one channel</strong>: no newsletter, LinkedIn quiet for 3+ months, or no Shorts/Reels.</p>
+<p><strong>Where to find them.</strong> Apple Podcasts and Spotify category charts in one niche (e.g. &quot;Business → Entrepreneurship&quot;); YouTube search for niche + &quot;podcast&quot; filtered to the last month; Listen Notes search; LinkedIn posts that link to podcast episodes. Use only the contact route they publish (website contact form, listed business email, LinkedIn DM).</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Day</th>
+<th>Actions</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Pick one niche. Fill in your settings in Repurpose Desk (name, prices). Find <strong>20 prospects</strong> and log each with the specific gap you saw.</td>
+<td>20 prospects in the pipeline</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Choose the <strong>5 best fits</strong>. For each, get a recent episode transcript (YouTube captions or Whisper) and build a voice profile from their own posts.</td>
+<td>5 episodes created</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Produce the <strong>newsletter + LinkedIn post</strong> for 3 of them. Clear every QC flag. Read each one aloud. Would <em>they</em> say it?</td>
+<td>3 approved samples</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Send <strong>3 personal messages</strong> (template in <code>outreach_templates.md</code>) with the sample attached or linked. Set stage = &quot;Free sample sent&quot;.</td>
+<td>3 sent</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Make and send samples for the other 2. Start the next 5.</td>
+<td>5 sent total</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Reply to every response within hours. To anyone positive: offer the <strong>$150 pilot</strong> (or $100 if they hesitate) for one full episode pack.</td>
+<td>Pilot offers</td>
+</tr>
+<tr>
+<td>7</td>
+<td>One polite follow-up to non-responders, then stop. Log all metrics in <code>experiment_tracker.csv</code>. Decide using the rules below.</td>
+<td>Decision</td>
+</tr>
+</tbody></table></div>
+<p><strong>Milestones (week 1 → week 3)</strong></p>
+<ul>
+<li>Relevant creators contacted with a sample: 5 → 15</li>
+<li>Replies (any): ≥1 → ≥3 <em>(interest)</em></li>
+<li>Asked for more or a call: ≥1 → ≥2 <em>(stronger interest)</em></li>
+<li><strong>Paid pilots: ≥1 by end of week 3</strong> <em>(payment)</em></li>
+<li>Delivery time per episode: record it, target ≤2h by your third episode</li>
+</ul>
+<p><strong>Decision rules (after 15 samples)</strong></p>
+<ul>
+<li><strong>Continue:</strong> ≥1 paid pilot, or ≥3 replies asking about price. Then raise the price for the next 5.</li>
+<li><strong>Change:</strong> replies but no payment → change niche (choose creators who sell something) or offer (cheaper pilot, a different deliverable mix). 0 replies → your samples or targeting are off. Have someone honest critique 2 samples, then re-target.</li>
+<li><strong>Stop:</strong> 30 samples, 0 paid pilots, after one niche change.</li>
+</ul>
+<hr>
+<h2>Plan B: Website makeovers (Site Makeover Kit)</h2>
+<p><strong>Who to approach.</strong> One trade in one town or region (e.g. &quot;gardeners in [your county]&quot;). Qualify for: a website that exists but is bad (no mobile layout, no click-to-call, outdated), <strong>plus</strong> signs they want work (Google Business profile with recent reviews, active social posts, or Google Ads).</p>
+<p><strong>Where to find them.</strong> Google Maps search <code>[trade] in [town]</code>. Click each website. Run the Site Makeover Kit audit.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Day</th>
+<th>Actions</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Audit <strong>30 sites</strong> in the kit. Log each as a prospect with its score.</td>
+<td>30 audits</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Pick the <strong>5 worst sites with the best businesses</strong> (good reviews, bad site). Build spec sites from their real details.</td>
+<td>5 spec sites</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Check every detail (hours, services, phone). Use only reviews they&#39;ve published publicly, with attribution, or leave them out.</td>
+<td>5 checked sites</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Send <strong>5 personal emails</strong> with the audit&#39;s top 2 issues, a screenshot, and the CAN-SPAM footer. Don&#39;t host spec sites publicly or let them be indexed. Send screenshots or a password-protected preview.</td>
+<td>5 sent</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Audit 10 more. Build 3 more spec sites. Send them.</td>
+<td>8 sent total</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Call back anyone who replied. Offer the <strong>$300–400 launch</strong> or a <strong>$100 quick fix</strong> (click-to-call, mobile tweaks).</td>
+<td>Offers</td>
+</tr>
+<tr>
+<td>7</td>
+<td>One polite follow-up. Log metrics. Decide.</td>
+<td>Decision</td>
+</tr>
+</tbody></table></div>
+<p><strong>Milestones</strong></p>
+<ul>
+<li>Audits: 30 → 60</li>
+<li>Emails sent: 8 → 20</li>
+<li>Replies: ≥1 → ≥2 <em>(interest)</em></li>
+<li><strong>Sales: ≥1 by week 3</strong> <em>(payment)</em>, even if it&#39;s the $100 quick fix</li>
+<li>Spec site build time: target ≤90 min</li>
+</ul>
+<p><strong>Decision rules (after 20 emails)</strong></p>
+<ul>
+<li><strong>Continue:</strong> ≥1 paid job or ≥2 calls. Add a care plan to every sale.</li>
+<li><strong>Change:</strong> replies but no sale → try a different trade, or lead with the $100 quick fix. No replies → shorten the email and lead with <em>one</em> concrete problem plus a screenshot.</li>
+<li><strong>Stop:</strong> 40 emails, 0 sales.</li>
+</ul>
+<hr>
+<h2>Measuring demand</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Interest (encouraging, not proof)</th>
+<th>Payment (proof)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Replies, &quot;looks great&quot;, calls booked, offer-page form fills, <strong>test-mode</strong> &quot;Reserve&quot; clicks</td>
+<td>Money received (pilot, launch fee, first monthly payment), a second payment from the same client</td>
+</tr>
+</tbody></table></div>
+<p>Log only real payments in the app&#39;s Payments section. The dashboard keeps the two columns separate on purpose.</p>
+<p class="foot">Source: <code>validation/seven_day_plans.md</code></p></article></main></div></body></html>

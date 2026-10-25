@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Video notes · AI Money Lab</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"><style>
+/* Layout: a fixed contents rail beside one reading column; rail becomes a scrolling strip on phones. */
+:root {
+  --paper: #fafaf8; --ink: #1d2430; --muted: #5b6473; --rule: #e1e4ea; --panel: #f1f3f6;
+  --accent: #24467a; --accent-soft: #e6ecf6; --ok: #1f7a45; --warn: #9a5b00;
+  --display: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #13161c; --ink: #e5e8ee; --muted: #9aa3b2; --rule: #2a303b; --panel: #1b1f27;
+  --accent: #93b2e8; --accent-soft: #1f2a3f; --ok: #6fd39a; --warn: #f0b860; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #13161c; --ink: #e5e8ee; --muted: #9aa3b2; --rule: #2a303b; --panel: #1b1f27;
+  --accent: #93b2e8; --accent-soft: #1f2a3f; --ok: #6fd39a; --warn: #f0b860; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.6 var(--body); }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.shell { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 3rem; max-width: 76rem; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 2.5rem 4rem; }
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 1.5rem); align-self: start; display: flex; flex-direction: column; gap: 1.25rem; }
+.brand { font-family: var(--display); font-size: 1.15rem; font-weight: 600; line-height: 1.25; color: var(--ink); text-decoration: none; }
+.brand small { display: block; font-family: var(--body); font-size: .78rem; font-weight: 400; color: var(--muted); margin-top: .25rem; }
+.toc { display: flex; flex-direction: column; gap: 2px; }
+.toc a, .toc button { display: block; text-align: left; padding: .38rem .6rem; border-radius: 6px; border: 0; background: none; font: 500 .9rem/1.35 var(--body); color: var(--muted); text-decoration: none; cursor: pointer; }
+.toc a:hover, .toc button:hover { color: var(--ink); background: var(--panel); }
+.toc [aria-current="page"] { color: var(--accent); background: var(--accent-soft); }
+.live { border-top: 1px solid var(--rule); padding-top: 1rem; display: flex; flex-direction: column; gap: .35rem; font-size: .85rem; }
+.live b { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+main { min-width: 0; }
+.doc { max-width: 46rem; }
+.doc h1 { font: 600 clamp(1.8rem, 4vw, 2.4rem)/1.15 var(--display); margin: 0 0 1rem; text-wrap: balance; letter-spacing: -.01em; }
+.doc h2 { font: 600 1.45rem/1.25 var(--display); margin: 2.4rem 0 .6rem; padding-top: 1.2rem; border-top: 1px solid var(--rule); text-wrap: balance; }
+.doc h3 { font: 600 1.08rem/1.35 var(--body); margin: 1.8rem 0 .4rem; }
+.doc h4 { font: 600 1rem/1.35 var(--body); margin: 1.4rem 0 .3rem; color: var(--muted); }
+.doc p, .doc li { max-width: 68ch; }
+.doc ul, .doc ol { padding-left: 1.3rem; }
+.doc li { margin: .2rem 0; }
+.doc hr { border: 0; border-top: 1px solid var(--rule); margin: 2rem 0; }
+.doc blockquote { margin: 1rem 0; padding: .75rem 1rem; border-left: 3px solid var(--accent); background: var(--panel); border-radius: 0 6px 6px 0; }
+.doc blockquote p { margin: .4rem 0; }
+.doc code { font: .86em var(--mono); background: var(--panel); padding: .1em .35em; border-radius: 4px; overflow-wrap: anywhere; }
+.doc pre { background: var(--panel); padding: 1rem; border-radius: 8px; overflow-x: auto; }
+.doc pre code { background: none; padding: 0; overflow-wrap: normal; }
+.tw { overflow-x: auto; margin: 1rem 0 1.4rem; border: 1px solid var(--rule); border-radius: 8px; }
+.doc table { border-collapse: collapse; width: 100%; font-size: .9rem; font-variant-numeric: tabular-nums; }
+.doc th, .doc td { text-align: left; vertical-align: top; padding: .5rem .7rem; border-bottom: 1px solid var(--rule); }
+.doc th { background: var(--panel); font-weight: 600; font-size: .8rem; color: var(--muted); white-space: nowrap; }
+.doc tr:last-child td { border-bottom: 0; }
+.doc td.num { text-align: right; }
+.tag { display: inline-block; font-size: .75rem; font-weight: 600; padding: 0 .5rem; border-radius: 999px; background: var(--panel); color: var(--muted); }
+.tag-payment { background: var(--accent-soft); color: var(--accent); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 1rem; margin: 1.5rem 0 2rem; }
+.card { display: flex; flex-direction: column; gap: .3rem; padding: 1rem 1.1rem; border: 1px solid var(--rule); border-radius: 8px; text-decoration: none; color: var(--ink); background: var(--paper); }
+.card:hover { border-color: var(--accent); }
+.card strong { font: 600 1.05rem/1.3 var(--display); color: var(--accent); }
+.card span { color: var(--muted); font-size: .9rem; }
+.lede { font-size: 1.08rem; color: var(--muted); max-width: 62ch; }
+.foot { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: .82rem; color: var(--muted); }
+@media (max-width: 860px) {
+  .shell { grid-template-columns: 1fr; gap: 1.5rem; padding-block: 1.25rem 3rem; }
+  .rail { position: static; }
+  .toc { flex-direction: row; overflow-x: auto; gap: 4px; padding-bottom: 4px; }
+  .toc a, .toc button { white-space: nowrap; }
+  .live { flex-direction: row; flex-wrap: wrap; gap: .4rem 1rem; }
+  .live b { width: 100%; }
+}
+</style></head>
+<body><div class="shell"><aside class="rail"><a class="brand" href="index.html">AI Money Lab<small>Research and prototypes</small></a><nav class="toc" aria-label="Documents"><a href="index.html">Overview</a><a href="report.html">Final report</a><a href="video.html" aria-current="page">Video notes</a><a href="methods.html">The seven methods</a><a href="scorecard.html">Feasibility scorecard</a><a href="picks.html">Recommendations</a><a href="plans.html">7-day plans</a><a href="outreach.html">Outreach templates</a><a href="tracker.html">Experiment tracker</a><a href="sources.html">Sources</a></nav><div class="live"><b>Live apps</b>
+<a href="https://repurpose-desk-flux.onrender.com" target="_blank" rel="noopener noreferrer">Repurpose Desk</a>
+<a href="https://site-makeover-kit.onrender.com" target="_blank" rel="noopener noreferrer">Site Makeover Kit</a>
+<a href="https://claude.ai/artifact/CdEKPZyz5YMNcks6iPKq8t" target="_blank" rel="noopener noreferrer">Scorecard chart</a>
+<a href="https://github.com/rubberly/ai-money-making-lab" target="_blank" rel="noopener noreferrer">GitHub repo</a></div></aside>
+<main><article class="doc"><h1>Video notes: &quot;7 Proven Ways to Make Money With AI (No Experience)&quot;, Mark Tilbury</h1>
+<h2>Identification and how it was accessed</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+<th>How verified</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Title on YouTube</td>
+<td><strong>7 Proven Ways to Make Money With AI (No Experience)</strong></td>
+<td>Video page metadata (<code>videoDetails.title</code>)</td>
+</tr>
+<tr>
+<td>Title as given in the brief</td>
+<td>&quot;…(Without Experience)&quot;</td>
+<td>Does <strong>not</strong> match exactly. &quot;No Experience&quot; is the published title. No video with &quot;Without Experience&quot; from this channel was found. Same creator, topic and 7-method structure, so treated as the intended video.</td>
+</tr>
+<tr>
+<td>Channel</td>
+<td>Mark Tilbury (<code>UCxgAuX3XZROujMmGphN_scA</code>)</td>
+<td>Video page metadata</td>
+</tr>
+<tr>
+<td>URL</td>
+<td><a href="https://www.youtube.com/watch?v=hriu0irRcpE" target="_blank" rel="noopener noreferrer">https://www.youtube.com/watch?v=hriu0irRcpE</a></td>
+<td></td>
+</tr>
+<tr>
+<td>Published</td>
+<td>2026-10-24 (one day before this research)</td>
+<td><code>publishDate</code></td>
+</tr>
+<tr>
+<td>Length</td>
+<td>26:24</td>
+<td><code>lengthSeconds</code> = 1584</td>
+</tr>
+<tr>
+<td>Views at time of research</td>
+<td>~346,000</td>
+<td><code>viewCount</code></td>
+</tr>
+<tr>
+<td>Guest / co-presenter</td>
+<td>Iman Gadzhi (captions render it &quot;E-Man&quot;)</td>
+<td>Description: &quot;I&#39;ve teamed up with Iman Gadzhi&quot;</td>
+</tr>
+</tbody></table></div>
+<p><strong>Access method.</strong> Chrome via the browser extension showed <strong>&quot;Site blocked&quot;</strong> for youtube.com, so the video could not be watched in the browser. The page was fetched over HTTP instead (metadata, description, chapters), and the <strong>full English caption track</strong> was downloaded with the open-source <code>youtube-transcript-api</code> (850 timestamped lines). I did <strong>not</strong> watch the visuals. Anything shown only on screen (prompts typed, exact tool screens, the AI website builder&#39;s name) is unknown unless it is spoken.</p>
+<p><strong>Caption quality.</strong> The captions are auto-generated, and some names are mis-transcribed: &quot;Hixfield&quot; = <strong>Higgsfield</strong>, &quot;TDO&quot; = very likely <strong>Tidio</strong>, &quot;High Level&quot; = <strong>HighLevel (GoHighLevel)</strong>, &quot;E-Man&quot; = <strong>Iman</strong>. These corrections are my interpretation.</p>
+<h2>Description (verbatim facts)</h2>
+<ul>
+<li>The top link promotes a &quot;FREE CHALLENGE: Let&#39;s build a $373/day AI Income LIVE (Nov 7th-15th, 2026)&quot; at a <code>link.consulting.com</code> URL.</li>
+<li>Chapters: 00:00 Intro · 00:51 Method One · 05:00 Method Two · 09:55 Method Three · 13:46 Method Four · 17:48 Method Five · 21:23 Method Six · 24:46 Method Seven.</li>
+</ul>
+<h2>Framing (00:00–00:50)</h2>
+<ul>
+<li>The opening claim is that most people make &quot;the exact same mistake&quot; by trying to build their own AI tool or startup, and &quot;99% of them will get demolished&quot; by funded companies (00:01–00:14).</li>
+<li>Thesis (Gadzhi, 00:31–00:42): businesses know they need AI but don&#39;t know how, so &quot;the real money goes to whoever can take these AI tools and put them to work for a business.&quot;</li>
+<li>Format: a tier list (S/A/B/C) of the methods.</li>
+</ul>
+<h2>The seven methods, as presented</h2>
+<p>Legend: <strong>[Said]</strong> = explicitly stated in the video · <strong>[Interp]</strong> = my interpretation.</p>
+<h3>Method 1: AI-enhanced property listing photos + walkthrough videos (Gadzhi) · 00:51–04:56 · <strong>B tier</strong></h3>
+<ul>
+<li>[Said] Real estate agents and property owners post &quot;rushed phone pictures with bad lighting&quot; and lack the time or budget for a photographer (01:02–01:21).</li>
+<li>[Said] Workflow: browse listings on Airbnb, Zillow, Property24 or Booking.com (01:36–01:45). Feed the photos into an AI image platform (&quot;Higgsfield&quot;) with a prompt to improve them (01:57–02:09). Then generate a &quot;cinematic walkthrough video&quot; from those photos (02:15–02:34).</li>
+<li>[Said] Why clients pay: more inquiries, and time saved, because the video &quot;does the first viewing for them&quot; (02:45–03:09).</li>
+<li>[Said] Lead generation: names, emails and phone numbers &quot;already sat here on online property listings.&quot; Pick listings with bad photos, send before/afters as a free sample, and keep one walkthrough as a portfolio piece, since walkthroughs are &quot;a little bit more expensive to generate&quot; (03:13–03:43). The walkthrough is the upsell (03:43–03:50).</li>
+<li>[Said] Price: about <strong>$100</strong> for a walkthrough plus improved images. Cost is &quot;a few dollars in credits&quot;. Monthly retainers later. &quot;$5,000 to $10,000 a month&quot; at scale (03:56–04:13).</li>
+<li>[Said] Requirements: a laptop and a Higgsfield subscription. &quot;You can land your first client this week&quot; (04:20–04:28).</li>
+<li>[Said] Competition: &quot;low… at least for now&quot; (04:31–04:42). Downside: it&#39;s a service, so &quot;your time is the product&quot; (04:44–04:51).</li>
+<li>[Not mentioned] Disclosure rules for AI-altered listing photos, platform bans on misrepresentative images, or who owns the listing photos. See seven_methods.md.</li>
+</ul>
+<h3>Method 2: Repurposing creators&#39; long-form content (Tilbury) · 05:00–09:52 · <strong>A tier</strong></h3>
+<ul>
+<li>[Said] Creators, podcasters and business owners publish long-form content and &quot;know they should be turning that into newsletters, short clips, X posts, and LinkedIn posts&quot; (05:11–05:27).</li>
+<li>[Said] Why not just use ChatGPT themselves: without telling the AI &quot;how the creator actually talks… you just get a generic robotic post&quot;, and busy people don&#39;t have time to set that up (05:28–05:46).</li>
+<li>[Said] Workflow (05:48–07:21): (1) pick a creator with long-form content. (2) Get a transcript from &quot;an AI transcripting platform&quot;, unnamed but &quot;pretty cheap&quot;. (3) Create a dedicated <strong>Claude Project</strong> per client, upload &quot;everything you can find on them&quot;, and write specific project instructions. (4) Paste the transcript. The output is a newsletter, short-form scripts, an X post and a LinkedIn post &quot;all in the client&#39;s voice.&quot;</li>
+<li>[Said] First client: pick creators active on one platform &quot;but nowhere else&quot;, e.g. &quot;a great podcast, but no newsletter&quot;. Repurpose a recent episode and send it as a free sample. Before sending, read it through, tweak it and &quot;check that it&#39;s accurate… this quality control is what they&#39;ll end up paying me&quot; (07:23–07:59).</li>
+<li>[Said] Price: monthly, by volume, &quot;a few hundred to a couple of $1,000 a month per client&quot; (08:05–08:16). Costs: a Claude subscription and a transcription tool (08:22–08:28).</li>
+<li>[Said] Start time: &quot;within a few days&quot; if &quot;you can tell good writing from boring writing&quot; (08:31–08:36). Competition: &quot;a decent amount&quot;, but most competitors &quot;just paste a transcript into an AI and send back whatever comes out&quot; (08:37–08:57).</li>
+<li>[Said] At 09:07–09:52 the video promotes the free 5-day &quot;AI Income Challenge&quot; starting <strong>November 7</strong>.</li>
+</ul>
+<h3>Method 3: Dead-lead reactivation (Gadzhi) · 09:55–13:44 · <strong>B tier</strong></h3>
+<ul>
+<li>[Said] Businesses (a dentist, gym, roofer, med spa) hold &quot;hundreds, sometimes even thousands&quot; of old leads who never bought (09:57–10:26).</li>
+<li>[Said] Workflow: import the business&#39;s old lead list into <strong>HighLevel</strong> (demoed with a &quot;fake list&quot; for a dental clinic). Use Claude to write natural messages. Use HighLevel&#39;s <strong>Conversation AI</strong> to handle replies, configured with the business, services, prices and the goal of booking an appointment (10:55–12:00).</li>
+<li>[Said] Pricing: performance-based, &quot;$50 to a couple $100 for each appointment that gets booked and shows up&quot;. &quot;Around $10,000 a month&quot; with a handful of clients (12:02–12:58).</li>
+<li>[Said] <strong>Compliance warnings, the only ones in the video</strong>: message only people who previously opted in to that business, never a bought list, check country texting rules, always provide an opt-out (12:16–12:40).</li>
+<li>[Said] Setup: &quot;a week or so&quot; (13:07–13:16). Competition: better known, but &quot;demand is still bigger than the supply&quot; (13:17–13:33).</li>
+</ul>
+<h3>Method 4: Website makeovers for local businesses (Tilbury) · 13:46–17:46 · <strong>between B and C tier</strong></h3>
+<ul>
+<li>[Said] Local business sites are slow, dated and break on phones. Owners avoid redesigns because of cost and delay (13:49–14:10).</li>
+<li>[Said] Workflow: search Google Maps (demo: &quot;gardeners in Kent&quot;) for businesses with bad websites. Use an AI website builder (name not spoken) with a detailed prompt built from their services, hours and reviews. Check it on mobile. Email it as a free sample (&quot;I noticed your website wasn&#39;t working well on mobile…&quot;). If they like it, charge to finish and launch it, then offer monthly upkeep (14:22–16:31).</li>
+<li>[Said] Price: &quot;a few hundred to a couple of $1,000&quot; per site, plus a monthly fee for hosting and updates (16:32–16:48).</li>
+<li>[Said] Start time: &quot;straight away&quot;. The skill to learn is what makes a local-business site convert: clear services, easy contact, mobile layout (16:53–17:12).</li>
+<li>[Said] Competition: crowded. Stand out by building sites &quot;that get customers to call or book&quot;. Mostly one-off jobs (17:13–17:34).</li>
+</ul>
+<h3>Method 5: AI-generated UGC-style ads (Gadzhi) · 17:48–21:21 · <strong>A tier &quot;for potential&quot;, with a warning</strong></h3>
+<ul>
+<li>[Said] Brands need constant new ads. UGC ads used to require shipping products to creators (17:52–18:30).</li>
+<li>[Said] Workflow: pick an AI ad tool (demo: Higgsfield). Upload an avatar image and product images (a lip plumper). Script the action and the words. In the demo, the AI avatar says &quot;everyone kept asking me what I was wearing on my lips… I&#39;ve had so many compliments&quot; (18:41–19:47). Send the result to the brand. Check &quot;the product, the claims, and the branding&quot; before use (19:50–20:04).</li>
+<li>[Said] Pricing: brands pay real UGC creators &quot;$100 to $600 or more for a single video&quot;. Retainers of &quot;a few $1,000 a month per client&quot; (20:09–20:26).</li>
+<li>[Said] Caveats: making an ad that <em>sells</em> is a different skill (hooks, angles). It&#39;s &quot;the most crowded idea&quot; here. Only A tier &quot;if you&#39;re willing to learn how ads actually work&quot; (20:27–21:18).</li>
+<li>[Interp/legal flag] The demo script has an AI-generated person describing a personal experience and compliments received. Under the FTC&#39;s 2024 rule on fake reviews and testimonials, that is the kind of testimonial from a person who doesn&#39;t exist that the rule targets. See seven_methods.md.</li>
+</ul>
+<h3>Method 6: AI customer-support chatbots for businesses (Tilbury) · 21:23–24:42 · <strong>B tier</strong></h3>
+<ul>
+<li>[Said] Businesses answer the same questions repeatedly. An untrained chatbot &quot;gives the wrong answers, which is worse than having no chatbot at all&quot;. The value is in setting it up properly, including handoff to a human (21:37–22:13).</li>
+<li>[Said] Workflow: pick a tool (&quot;TDO&quot;, likely Tidio, or <strong>Chatbase</strong>). Feed it the website, FAQs and returns policy. Set rules (&quot;only answer using the information provided… if you don&#39;t know, say so and offer to pass the customer to a human&quot;). Test thoroughly, &quot;the bit most people skip&quot; (22:16–23:52).</li>
+<li>[Said] Pricing: one-off setup fee plus a monthly fee. <strong>No dollar figures were given</strong> (23:53–23:59).</li>
+<li>[Said] Setup takes an afternoon with no coding. Competition is &quot;medium to high&quot;. Downsides: businesses can buy the tools themselves, and &quot;if the bot gets something wrong, the blame lands on you&quot; (24:00–24:40).</li>
+</ul>
+<h3>Method 7: Not revealed (&quot;S tier&quot;) · 24:46–26:24</h3>
+<ul>
+<li>[Said] Both hosts say it &quot;beats everything else on this board&quot;, but they <strong>do not say what it is</strong>. They direct viewers to register for the free AI Income Challenge (Nov 7, 5 days) to learn it (24:49–26:13).</li>
+<li><strong>Missing information:</strong> method 7&#39;s content, cost, workflow and evidence are all unknown. The $373/day figure in the description is a marketing claim with no evidence in the video. I did not register for the event, since that requires submitting personal data to a third party.</li>
+<li>[Interp] Pattern: the description advertises a figure (&quot;$373/day&quot;), and the free event is the top of a sales funnel (Gadzhi&#39;s education business). The challenge almost certainly ends with a paid offer, but this is <strong>unverified</strong>. Treat the event as marketing, not as part of the evidence base.</li>
+</ul>
+<h2>Claims that remain unverified</h2>
+<ul>
+<li>All income figures ($5k–$10k/mo for Method 1, ~$10k/mo for Method 3, &quot;few $1,000/mo per client&quot; for Method 5, $373/day) are speaker assertions with no case studies, client names or proof shown.</li>
+<li>&quot;Low competition&quot; for Method 1 and &quot;demand bigger than supply&quot; for Method 3 are opinions, not data.</li>
+<li>&quot;Land your first client this week&quot; (Method 1) is a claim, not a typical-result statistic.</li>
+<li>Gadzhi is described as &quot;an investor and advisor to a multi-billion dollar AI company&quot; (00:15–00:21). The company is not named and I did not verify it.</li>
+</ul>
+<p class="foot">Source: <code>research/video_notes.md</code></p></article></main></div></body></html>

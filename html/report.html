@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Final report · AI Money Lab</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"><style>
+/* Layout: a fixed contents rail beside one reading column; rail becomes a scrolling strip on phones. */
+:root {
+  --paper: #fafaf8; --ink: #1d2430; --muted: #5b6473; --rule: #e1e4ea; --panel: #f1f3f6;
+  --accent: #24467a; --accent-soft: #e6ecf6; --ok: #1f7a45; --warn: #9a5b00;
+  --display: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #13161c; --ink: #e5e8ee; --muted: #9aa3b2; --rule: #2a303b; --panel: #1b1f27;
+  --accent: #93b2e8; --accent-soft: #1f2a3f; --ok: #6fd39a; --warn: #f0b860; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #13161c; --ink: #e5e8ee; --muted: #9aa3b2; --rule: #2a303b; --panel: #1b1f27;
+  --accent: #93b2e8; --accent-soft: #1f2a3f; --ok: #6fd39a; --warn: #f0b860; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.6 var(--body); }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.shell { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 3rem; max-width: 76rem; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 2.5rem 4rem; }
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 1.5rem); align-self: start; display: flex; flex-direction: column; gap: 1.25rem; }
+.brand { font-family: var(--display); font-size: 1.15rem; font-weight: 600; line-height: 1.25; color: var(--ink); text-decoration: none; }
+.brand small { display: block; font-family: var(--body); font-size: .78rem; font-weight: 400; color: var(--muted); margin-top: .25rem; }
+.toc { display: flex; flex-direction: column; gap: 2px; }
+.toc a, .toc button { display: block; text-align: left; padding: .38rem .6rem; border-radius: 6px; border: 0; background: none; font: 500 .9rem/1.35 var(--body); color: var(--muted); text-decoration: none; cursor: pointer; }
+.toc a:hover, .toc button:hover { color: var(--ink); background: var(--panel); }
+.toc [aria-current="page"] { color: var(--accent); background: var(--accent-soft); }
+.live { border-top: 1px solid var(--rule); padding-top: 1rem; display: flex; flex-direction: column; gap: .35rem; font-size: .85rem; }
+.live b { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+main { min-width: 0; }
+.doc { max-width: 46rem; }
+.doc h1 { font: 600 clamp(1.8rem, 4vw, 2.4rem)/1.15 var(--display); margin: 0 0 1rem; text-wrap: balance; letter-spacing: -.01em; }
+.doc h2 { font: 600 1.45rem/1.25 var(--display); margin: 2.4rem 0 .6rem; padding-top: 1.2rem; border-top: 1px solid var(--rule); text-wrap: balance; }
+.doc h3 { font: 600 1.08rem/1.35 var(--body); margin: 1.8rem 0 .4rem; }
+.doc h4 { font: 600 1rem/1.35 var(--body); margin: 1.4rem 0 .3rem; color: var(--muted); }
+.doc p, .doc li { max-width: 68ch; }
+.doc ul, .doc ol { padding-left: 1.3rem; }
+.doc li { margin: .2rem 0; }
+.doc hr { border: 0; border-top: 1px solid var(--rule); margin: 2rem 0; }
+.doc blockquote { margin: 1rem 0; padding: .75rem 1rem; border-left: 3px solid var(--accent); background: var(--panel); border-radius: 0 6px 6px 0; }
+.doc blockquote p { margin: .4rem 0; }
+.doc code { font: .86em var(--mono); background: var(--panel); padding: .1em .35em; border-radius: 4px; overflow-wrap: anywhere; }
+.doc pre { background: var(--panel); padding: 1rem; border-radius: 8px; overflow-x: auto; }
+.doc pre code { background: none; padding: 0; overflow-wrap: normal; }
+.tw { overflow-x: auto; margin: 1rem 0 1.4rem; border: 1px solid var(--rule); border-radius: 8px; }
+.doc table { border-collapse: collapse; width: 100%; font-size: .9rem; font-variant-numeric: tabular-nums; }
+.doc th, .doc td { text-align: left; vertical-align: top; padding: .5rem .7rem; border-bottom: 1px solid var(--rule); }
+.doc th { background: var(--panel); font-weight: 600; font-size: .8rem; color: var(--muted); white-space: nowrap; }
+.doc tr:last-child td { border-bottom: 0; }
+.doc td.num { text-align: right; }
+.tag { display: inline-block; font-size: .75rem; font-weight: 600; padding: 0 .5rem; border-radius: 999px; background: var(--panel); color: var(--muted); }
+.tag-payment { background: var(--accent-soft); color: var(--accent); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 1rem; margin: 1.5rem 0 2rem; }
+.card { display: flex; flex-direction: column; gap: .3rem; padding: 1rem 1.1rem; border: 1px solid var(--rule); border-radius: 8px; text-decoration: none; color: var(--ink); background: var(--paper); }
+.card:hover { border-color: var(--accent); }
+.card strong { font: 600 1.05rem/1.3 var(--display); color: var(--accent); }
+.card span { color: var(--muted); font-size: .9rem; }
+.lede { font-size: 1.08rem; color: var(--muted); max-width: 62ch; }
+.foot { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: .82rem; color: var(--muted); }
+@media (max-width: 860px) {
+  .shell { grid-template-columns: 1fr; gap: 1.5rem; padding-block: 1.25rem 3rem; }
+  .rail { position: static; }
+  .toc { flex-direction: row; overflow-x: auto; gap: 4px; padding-bottom: 4px; }
+  .toc a, .toc button { white-space: nowrap; }
+  .live { flex-direction: row; flex-wrap: wrap; gap: .4rem 1rem; }
+  .live b { width: 100%; }
+}
+</style></head>
+<body><div class="shell"><aside class="rail"><a class="brand" href="index.html">AI Money Lab<small>Research and prototypes</small></a><nav class="toc" aria-label="Documents"><a href="index.html">Overview</a><a href="report.html" aria-current="page">Final report</a><a href="video.html">Video notes</a><a href="methods.html">The seven methods</a><a href="scorecard.html">Feasibility scorecard</a><a href="picks.html">Recommendations</a><a href="plans.html">7-day plans</a><a href="outreach.html">Outreach templates</a><a href="tracker.html">Experiment tracker</a><a href="sources.html">Sources</a></nav><div class="live"><b>Live apps</b>
+<a href="https://repurpose-desk-flux.onrender.com" target="_blank" rel="noopener noreferrer">Repurpose Desk</a>
+<a href="https://site-makeover-kit.onrender.com" target="_blank" rel="noopener noreferrer">Site Makeover Kit</a>
+<a href="https://claude.ai/artifact/CdEKPZyz5YMNcks6iPKq8t" target="_blank" rel="noopener noreferrer">Scorecard chart</a>
+<a href="https://github.com/rubberly/ai-money-making-lab" target="_blank" rel="noopener noreferrer">GitHub repo</a></div></aside>
+<main><article class="doc"><h1>Final report: AI money-making research and prototype lab</h1>
+<p><em>Prepared 2026-10-25. All income, cost and time figures are estimates or quoted claims, not promises.</em></p>
+<h2>1. Executive summary</h2>
+<ul>
+<li><strong>The video was found and analysed from its full caption track</strong> (Chrome blocked YouTube, so the video wasn&#39;t watched). Its published title is &quot;…(<strong>No</strong> Experience)&quot;, not &quot;Without Experience&quot;. Same creator, same 7-method structure.</li>
+<li><strong>Only six methods are actually explained.</strong> Method 7, the &quot;S tier&quot;, is held back to promote a free 5-day &quot;AI Income Challenge&quot; (Nov 7), which is the top of a sales funnel. Its content is unknown and unscored.</li>
+<li><strong>Recommendation: content repurposing for podcasters and YouTubers (Method 2).</strong> Score 78/100. You can start for $0, legal risk is lowest, income is recurring, and it can be validated with 15 personal free samples. Website makeovers (68/100) is a solid second.</li>
+<li><strong>On whether you need an app:</strong> for most of these ideas, no. The SaaS tools <em>are</em> the app, and the bottleneck is selling, staying legal, and quality. Software genuinely helps in two places: repurposing (repeatable delivery and fact-checking) and website makeovers (audit-led pitching and free spec sites). <strong>I built both, tested both, and they work.</strong></li>
+<li><strong>Watch-outs the video doesn&#39;t mention:</strong><ul>
+<li>AI-edited property photos are hitting MLS and platform disclosure rules.</li>
+<li>The UGC-ad demo (an AI person describing their own experience) is the kind of fake testimonial the FTC&#39;s 2024 rule bans.</li>
+<li>Dead-lead SMS needs TCPA consent and 10DLC registration.</li>
+</ul>
+</li>
+</ul>
+<h2>2. Video findings</h2>
+<p>Tilbury &amp; Gadzhi, published 2026-10-24, 26:24, <a href="https://www.youtube.com/watch?v=hriu0irRcpE" target="_blank" rel="noopener noreferrer">https://www.youtube.com/watch?v=hriu0irRcpE</a>. Full notes: <code>research/video_notes.md</code>.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Time</th>
+<th>Presenter</th>
+<th>Method</th>
+<th>Their tier</th>
+<th>Price/income claimed</th>
+<th>Tools named</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>00:51</td>
+<td>Gadzhi</td>
+<td>AI-enhanced property listing photos + AI walkthrough videos for agents and hosts. Free before/after sample, upsell video.</td>
+<td>B</td>
+<td>~$100 per listing. &quot;$5k–10k/mo&quot; with retainers</td>
+<td>Higgsfield. Airbnb, Zillow, Property24, Booking.com</td>
+</tr>
+<tr>
+<td>2</td>
+<td>05:00</td>
+<td>Tilbury</td>
+<td>Repurpose creators&#39; long-form content into newsletter, X, LinkedIn and short scripts in their voice. Free sample first, QC is the value.</td>
+<td>A</td>
+<td>&quot;Few hundred to a couple thousand $/mo per client&quot;</td>
+<td>Claude Projects, a transcription tool</td>
+</tr>
+<tr>
+<td>3</td>
+<td>09:55</td>
+<td>Gadzhi</td>
+<td>Reactivate businesses&#39; old leads with AI texting. Paid per booked, attended appointment.</td>
+<td>B</td>
+<td>$50 to a few hundred per show. &quot;~$10k/mo&quot;</td>
+<td>HighLevel + Conversation AI, Claude</td>
+</tr>
+<tr>
+<td>4</td>
+<td>13:46</td>
+<td>Tilbury</td>
+<td>Local business website makeovers with an AI builder. Free spec site, then launch plus monthly care.</td>
+<td>B/C</td>
+<td>&quot;Few hundred to a couple thousand&quot; + monthly</td>
+<td>Google Maps, an unnamed AI website builder</td>
+</tr>
+<tr>
+<td>5</td>
+<td>17:48</td>
+<td>Gadzhi</td>
+<td>AI UGC-style ads with AI avatars for brands.</td>
+<td>A (for potential, with a warning)</td>
+<td>Real creators get $100–600/video. &quot;Few $1,000/mo&quot; retainers</td>
+<td>Higgsfield</td>
+</tr>
+<tr>
+<td>6</td>
+<td>21:23</td>
+<td>Tilbury</td>
+<td>Set up and test AI support chatbots for businesses.</td>
+<td>B</td>
+<td>Setup + monthly (no figures)</td>
+<td>Chatbase, Tidio (&quot;TDO&quot;)</td>
+</tr>
+<tr>
+<td>7</td>
+<td>24:46</td>
+<td>Both</td>
+<td><strong>Not revealed.</strong> Promotes the free &quot;AI Income Challenge&quot; (Nov 7–15). Description advertises &quot;$373/day&quot;.</td>
+<td>&quot;S&quot;</td>
+<td>Unverified marketing claim</td>
+<td>–</td>
+</tr>
+</tbody></table></div>
+<p>None of the income figures were backed by case studies in the video. They&#39;re treated as unverified.</p>
+<h2>3. Feasibility rankings</h2>
+<p>Weights: cost 15, beginner 15, speed 15, demand 15, profit/effort 15, build 10, automate 10, risk 5. Reasons for every score: <code>research/feasibility_scorecard.md</code>.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>Rank</th>
+<th>Method</th>
+<th align="right">Score</th>
+<th>Min. startup cost (est.)</th>
+<th>First customer (est.)</th>
+<th>Main reason</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Content repurposing</td>
+<td align="right"><strong>78.0</strong></td>
+<td>$0 ($20/mo optional AI)</td>
+<td>1–3 weeks</td>
+<td>Free to test, recurring, low risk. Paid market exists, but $19–39 tools cap the price</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Website makeovers</td>
+<td align="right"><strong>68.0</strong></td>
+<td>$0 (free hosting)</td>
+<td>2–4 weeks</td>
+<td>Universal need, priced below $500–5k freelance rates. Spec work and selling effort</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Support chatbots</td>
+<td align="right"><strong>63.5</strong></td>
+<td>~$0–40/mo</td>
+<td>2–4 weeks</td>
+<td>Easy demo, but businesses can self-serve, and they&#39;re liable for wrong answers</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Listing photo/video makeovers</td>
+<td align="right"><strong>63.0</strong></td>
+<td>~$15–40/mo</td>
+<td>~1–2 weeks</td>
+<td>Fast, but editing sells for ~$1.60/image and disclosure rules are tightening</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Dead-lead reactivation</td>
+<td align="right"><strong>54.5</strong></td>
+<td>~$150–250/mo</td>
+<td>3–6 weeks</td>
+<td>Software and registration costs first. TCPA/10DLC consent</td>
+</tr>
+<tr>
+<td>6</td>
+<td>AI UGC ads</td>
+<td align="right"><strong>50.5</strong></td>
+<td>~$39–110/mo</td>
+<td>4+ weeks</td>
+<td>Needs ad expertise. The demo&#39;s fake testimonials are FTC-risky</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Unrevealed</td>
+<td align="right">n/a</td>
+<td>unknown</td>
+<td>unknown</td>
+<td>Not disclosed</td>
+</tr>
+</tbody></table></div>
+<ul>
+<li><strong>Little or no money:</strong> repurposing.</li>
+<li><strong>Fastest plausible revenue:</strong> a small, honest photo refresh, or a repurposing pilot.</li>
+<li><strong>Long-term growth:</strong> repurposing retainers. UGC ads have the highest ceiling, but only for skilled ad makers.</li>
+<li><strong>Easiest to test free:</strong> repurposing and website makeovers.</li>
+<li><strong>Avoid or postpone:</strong> dead-lead SMS and fake-testimonial UGC ads.</li>
+</ul>
+<h2>4. Best opportunities</h2>
+<p><strong>A. Content repurposing.</strong> Target weekly podcasters and YouTubers who sell something and are missing a channel. Offer a free sample → $150 pilot → $400–600/mo for 4 episodes. You win on voice and accuracy, which DIY tools don&#39;t give and &quot;paste into ChatGPT&quot; freelancers skip.
+<strong>What could make it fail:</strong></p>
+<ul>
+<li>generic-sounding output</li>
+<li>targeting creators who don&#39;t care about the missing channel</li>
+<li>underpricing that leaves you below minimum wage</li>
+<li>self-serve tools pushing prices down</li>
+</ul>
+<p><strong>B. Website makeovers.</strong> Target local trades with bad mobile sites who show they want customers. The pitch leads with a specific audit of their site plus a spec site. Offer: a $300–600 launch plus a $25–50/mo care plan.
+<strong>What could make it fail:</strong></p>
+<ul>
+<li>wasted spec work</li>
+<li>cold email ignored</li>
+<li>one-off revenue with no care plan</li>
+<li>a crowded market</li>
+</ul>
+<p>Full definitions (customer, problem, product, revenue, differentiation, smallest version, validation, assumptions): <code>research/business_recommendations.md</code>.</p>
+<h2>5. Prototypes built</h2>
+<h3>Repurpose Desk: <code>prototypes/repurpose-desk</code> (port 3100)</h3>
+<ul>
+<li><strong>What it does:</strong> runs the whole repurposing service. It stores voice profiles per client and imports transcripts (paste or .txt/.srt/.vtt, timestamps kept). It analyses the episode: keywords, strongest moments, 3 clip windows of 15–60s, chapters. It drafts 6 deliverables (newsletter, LinkedIn, X thread, clip plan, show notes, quotes).</li>
+<li><strong>Automatic QC:</strong> flags numbers not in the transcript, non-verbatim quotes, impossible timestamps, client-banned words, AI clichés, the X 280 and LinkedIn 3,000 character limits, and leftover <code>[EDIT]</code> placeholders. Failing drafts can&#39;t be approved without a written override.</li>
+<li><strong>Delivery and business tracking:</strong> client-pack export (HTML/Markdown), prospect pipeline with CSV export, outreach drafts (copy only), per-episode time tracking, a payments log, and a dashboard that keeps <strong>interest</strong> separate from <strong>payment</strong>. A public <code>/offer</code> page has an interest form and test-mode &quot;Reserve&quot; buttons.</li>
+<li><strong>Who uses it:</strong> you, as the service provider.</li>
+<li><strong>Problem solved:</strong> consistent quality, fewer hours per episode, and a record of what was checked.</li>
+<li><strong>What actually works (tested):</strong> 17 automated tests pass, covering parsing, analysis, every QC rule, export escaping, both AI adapters (with fakes), the full API workflow, persistence after restart, validation, CSV formula-injection guard and cross-origin write blocking. I also clicked through the full workflow in Chrome: create client → load sample → generate → approval blocked by QC → edit → QC passed → approve → dashboard updated → offer-page form and test checkout recorded. Phone-width (375px) layouts showed no horizontal overflow. The real Anthropic SDK loads, and a call with a deliberately invalid key returned a clean 401 error.</li>
+<li><strong>What&#39;s incomplete:</strong><ul>
+<li><strong>No live AI generation was tested</strong> (no API key or local model on this machine).</li>
+<li>QC is heuristic and can&#39;t judge voice.</li>
+<li>No built-in transcription.</li>
+<li>Single-user and local only.</li>
+<li>The offer page needs hosting to be seen by real people.</li>
+</ul>
+</li>
+<li><strong>Revenue path:</strong> pilot and monthly fees from creators.</li>
+</ul>
+<h3>Site Makeover Kit: <code>prototypes/site-makeover-kit</code> (port 3200)</h3>
+<ul>
+<li><strong>What it does:</strong> keeps a prospect pipeline of local businesses. It fetches and audits a live site, with protection against requests to private or internal addresses on every redirect. The audit runs 15 weighted checks (HTTPS, mobile viewport, click-to-call, contact route, CTA, H1, alt text, page weight, stale copyright year, etc.) and produces a score out of 100 plus a printable client report. It extracts the business&#39;s details from the page.</li>
+<li><strong>Spec-site generator:</strong> builds a fast, mobile-first, single-file site. It includes a sticky call bar, LocalBusiness schema and 4 themes, and it <strong>never invents reviews</strong>. Real reviews appear only after you tick a confirmation box.</li>
+<li><strong>Selling tools:</strong> an outreach email draft built from the audit&#39;s top issues with a CAN-SPAM footer, a pricing calculator, and an <code>/offer</code> page with test-mode orders.</li>
+<li><strong>Who uses it:</strong> you, as the freelancer.</li>
+<li><strong>Problem solved:</strong> specific, credible pitches at speed, and no builder subscription.</li>
+<li><strong>What actually works (tested):</strong> 45 automated tests pass (rerun by me independently). In Chrome I ran a live audit of <a href="https://example.com" target="_blank" rel="noopener noreferrer">https://example.com</a> (score 58, findings accurate), built a sample site from it, saw the template copy correctly labelled &quot;(no AI)&quot;, and checked the app and offer page at 375px (no horizontal overflow). The building agent also tested the offer form, the test-mode order, and the redirect handling.</li>
+<li><strong>What&#39;s incomplete:</strong><ul>
+<li>The audit uses pattern matching, not a real browser. Speed is measured only with a free PageSpeed key.</li>
+<li>Phone and address extraction covers UK and US formats.</li>
+<li>AI copy polish was tested only with fakes.</li>
+<li>Contact forms on generated sites use <code>mailto:</code> unless you configure a form endpoint.</li>
+</ul>
+</li>
+<li><strong>Revenue path:</strong> launch fees plus care plans.</li>
+</ul>
+<h2>6. Files and access</h2>
+<p>All files are under <code>C:\Users\lucas\ai-money-making-lab\</code>. A ZIP of the whole project (without <code>node_modules</code> or local data) is at <code>C:\Users\lucas\ai-money-making-lab.zip</code>.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>What</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>This report</td>
+<td><code>reports\final_report.md</code></td>
+</tr>
+<tr>
+<td>Video notes</td>
+<td><code>research\video_notes.md</code></td>
+</tr>
+<tr>
+<td>Method deep dives</td>
+<td><code>research\seven_methods.md</code></td>
+</tr>
+<tr>
+<td>Scorecard</td>
+<td><code>research\feasibility_scorecard.md</code></td>
+</tr>
+<tr>
+<td>Recommendations</td>
+<td><code>research\business_recommendations.md</code></td>
+</tr>
+<tr>
+<td>Sources</td>
+<td><code>research\sources.md</code></td>
+</tr>
+<tr>
+<td>7-day plans / outreach / tracker</td>
+<td><code>validation\</code></td>
+</tr>
+<tr>
+<td>Repurpose Desk</td>
+<td><code>prototypes\repurpose-desk\</code> (README inside)</td>
+</tr>
+<tr>
+<td>Site Makeover Kit</td>
+<td><code>prototypes\site-makeover-kit\</code> (README inside)</td>
+</tr>
+</tbody></table></div>
+<h2>7. First $100 plan (repurposing)</h2>
+<ul>
+<li><strong>Today (2–3 hours):</strong> start Repurpose Desk. Set your name and prices. Pick one niche (e.g. business coaches with podcasts). Log 20 creators who post weekly and are missing a newsletter or LinkedIn.</li>
+<li><strong>This week:</strong> make 5 excellent free samples (newsletter + LinkedIn) that pass QC and that you&#39;d be proud to sign. Send them as 5 personal messages. Follow up once. Offer anyone positive the $150 pilot (fall back to $100).</li>
+<li><strong>After the first feedback:</strong> if they like it but don&#39;t pay, ask what would make it worth paying for, and adjust the deliverable mix or price. If they pay, deliver within 48h, track your minutes, ask for a testimonial and a referral, then offer the monthly plan. If 15 samples get 0 replies, get an honest critique of 2 samples and switch niche.</li>
+</ul>
+<h2>8. Final recommendation</h2>
+<p><strong>Pursue content repurposing first.</strong> It costs nothing to test. It uses a skill (careful editing) you can show off in the free sample itself. Monthly clients add up, and the legal risk is low. The tool already handles delivery, QC and tracking, so your time goes into finding the right 15 creators.</p>
+<p><strong>Next three actions:</strong></p>
+<ol>
+<li>Run <code>cd C:\Users\lucas\ai-money-making-lab\prototypes\repurpose-desk &amp;&amp; npm start</code> and add 20 prospects with the specific gap you saw for each.</li>
+<li>Make 3 free samples this week that pass QC with zero overrides, and send them personally using <code>validation/outreach_templates.md</code>.</li>
+<li>Log every reply and payment in the app. After 15 samples, apply the continue/change/stop rules in <code>validation/seven_day_plans.md</code>.</li>
+</ol>
+<p class="foot">Source: <code>reports/final_report.md</code></p></article></main></div></body></html>

@@ -35,6 +35,8 @@ ai-money-making-lab/
 - **Deploys:** pushing to `main` redeploys both apps (Blueprint `ai-money-making-lab`).
 - **Free plan limits:** apps sleep when idle (first load can take ~1 min) and **saved data is wiped on every restart or redeploy**. Download backups, or add a paid persistent disk, before relying on the hosted copies.
 
+**HTML versions of every document:** open `html/index.html` in a browser. To rebuild after editing the Markdown: `npm install marked@12.0.2` in `tools/`, then `node tools/build-html.mjs . <folder-for-combined-page>`.
+
 ## Run the prototypes (Node.js 20+, no install needed)
 
 ```bash

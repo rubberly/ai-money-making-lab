@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The seven methods · AI Money Lab</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"><style>
+/* Layout: a fixed contents rail beside one reading column; rail becomes a scrolling strip on phones. */
+:root {
+  --paper: #fafaf8; --ink: #1d2430; --muted: #5b6473; --rule: #e1e4ea; --panel: #f1f3f6;
+  --accent: #24467a; --accent-soft: #e6ecf6; --ok: #1f7a45; --warn: #9a5b00;
+  --display: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #13161c; --ink: #e5e8ee; --muted: #9aa3b2; --rule: #2a303b; --panel: #1b1f27;
+  --accent: #93b2e8; --accent-soft: #1f2a3f; --ok: #6fd39a; --warn: #f0b860; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #13161c; --ink: #e5e8ee; --muted: #9aa3b2; --rule: #2a303b; --panel: #1b1f27;
+  --accent: #93b2e8; --accent-soft: #1f2a3f; --ok: #6fd39a; --warn: #f0b860; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.6 var(--body); }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.shell { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 3rem; max-width: 76rem; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 2.5rem 4rem; }
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 1.5rem); align-self: start; display: flex; flex-direction: column; gap: 1.25rem; }
+.brand { font-family: var(--display); font-size: 1.15rem; font-weight: 600; line-height: 1.25; color: var(--ink); text-decoration: none; }
+.brand small { display: block; font-family: var(--body); font-size: .78rem; font-weight: 400; color: var(--muted); margin-top: .25rem; }
+.toc { display: flex; flex-direction: column; gap: 2px; }
+.toc a, .toc button { display: block; text-align: left; padding: .38rem .6rem; border-radius: 6px; border: 0; background: none; font: 500 .9rem/1.35 var(--body); color: var(--muted); text-decoration: none; cursor: pointer; }
+.toc a:hover, .toc button:hover { color: var(--ink); background: var(--panel); }
+.toc [aria-current="page"] { color: var(--accent); background: var(--accent-soft); }
+.live { border-top: 1px solid var(--rule); padding-top: 1rem; display: flex; flex-direction: column; gap: .35rem; font-size: .85rem; }
+.live b { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+main { min-width: 0; }
+.doc { max-width: 46rem; }
+.doc h1 { font: 600 clamp(1.8rem, 4vw, 2.4rem)/1.15 var(--display); margin: 0 0 1rem; text-wrap: balance; letter-spacing: -.01em; }
+.doc h2 { font: 600 1.45rem/1.25 var(--display); margin: 2.4rem 0 .6rem; padding-top: 1.2rem; border-top: 1px solid var(--rule); text-wrap: balance; }
+.doc h3 { font: 600 1.08rem/1.35 var(--body); margin: 1.8rem 0 .4rem; }
+.doc h4 { font: 600 1rem/1.35 var(--body); margin: 1.4rem 0 .3rem; color: var(--muted); }
+.doc p, .doc li { max-width: 68ch; }
+.doc ul, .doc ol { padding-left: 1.3rem; }
+.doc li { margin: .2rem 0; }
+.doc hr { border: 0; border-top: 1px solid var(--rule); margin: 2rem 0; }
+.doc blockquote { margin: 1rem 0; padding: .75rem 1rem; border-left: 3px solid var(--accent); background: var(--panel); border-radius: 0 6px 6px 0; }
+.doc blockquote p { margin: .4rem 0; }
+.doc code { font: .86em var(--mono); background: var(--panel); padding: .1em .35em; border-radius: 4px; overflow-wrap: anywhere; }
+.doc pre { background: var(--panel); padding: 1rem; border-radius: 8px; overflow-x: auto; }
+.doc pre code { background: none; padding: 0; overflow-wrap: normal; }
+.tw { overflow-x: auto; margin: 1rem 0 1.4rem; border: 1px solid var(--rule); border-radius: 8px; }
+.doc table { border-collapse: collapse; width: 100%; font-size: .9rem; font-variant-numeric: tabular-nums; }
+.doc th, .doc td { text-align: left; vertical-align: top; padding: .5rem .7rem; border-bottom: 1px solid var(--rule); }
+.doc th { background: var(--panel); font-weight: 600; font-size: .8rem; color: var(--muted); white-space: nowrap; }
+.doc tr:last-child td { border-bottom: 0; }
+.doc td.num { text-align: right; }
+.tag { display: inline-block; font-size: .75rem; font-weight: 600; padding: 0 .5rem; border-radius: 999px; background: var(--panel); color: var(--muted); }
+.tag-payment { background: var(--accent-soft); color: var(--accent); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 1rem; margin: 1.5rem 0 2rem; }
+.card { display: flex; flex-direction: column; gap: .3rem; padding: 1rem 1.1rem; border: 1px solid var(--rule); border-radius: 8px; text-decoration: none; color: var(--ink); background: var(--paper); }
+.card:hover { border-color: var(--accent); }
+.card strong { font: 600 1.05rem/1.3 var(--display); color: var(--accent); }
+.card span { color: var(--muted); font-size: .9rem; }
+.lede { font-size: 1.08rem; color: var(--muted); max-width: 62ch; }
+.foot { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: .82rem; color: var(--muted); }
+@media (max-width: 860px) {
+  .shell { grid-template-columns: 1fr; gap: 1.5rem; padding-block: 1.25rem 3rem; }
+  .rail { position: static; }
+  .toc { flex-direction: row; overflow-x: auto; gap: 4px; padding-bottom: 4px; }
+  .toc a, .toc button { white-space: nowrap; }
+  .live { flex-direction: row; flex-wrap: wrap; gap: .4rem 1rem; }
+  .live b { width: 100%; }
+}
+</style></head>
+<body><div class="shell"><aside class="rail"><a class="brand" href="index.html">AI Money Lab<small>Research and prototypes</small></a><nav class="toc" aria-label="Documents"><a href="index.html">Overview</a><a href="report.html">Final report</a><a href="video.html">Video notes</a><a href="methods.html" aria-current="page">The seven methods</a><a href="scorecard.html">Feasibility scorecard</a><a href="picks.html">Recommendations</a><a href="plans.html">7-day plans</a><a href="outreach.html">Outreach templates</a><a href="tracker.html">Experiment tracker</a><a href="sources.html">Sources</a></nav><div class="live"><b>Live apps</b>
+<a href="https://repurpose-desk-flux.onrender.com" target="_blank" rel="noopener noreferrer">Repurpose Desk</a>
+<a href="https://site-makeover-kit.onrender.com" target="_blank" rel="noopener noreferrer">Site Makeover Kit</a>
+<a href="https://claude.ai/artifact/CdEKPZyz5YMNcks6iPKq8t" target="_blank" rel="noopener noreferrer">Scorecard chart</a>
+<a href="https://github.com/rubberly/ai-money-making-lab" target="_blank" rel="noopener noreferrer">GitHub repo</a></div></aside>
+<main><article class="doc"><h1>The seven methods: deep dive</h1>
+<p>Each method follows the same structure:</p>
+<ul>
+<li><strong>The idea</strong> (what the video says, with timestamps)</li>
+<li><strong>How it actually works</strong>: the real workflow</li>
+<li><strong>Customers and demand</strong></li>
+<li><strong>Competitors and pricing</strong></li>
+<li><strong>Costs</strong></li>
+<li><strong>Legal and platform risk</strong></li>
+<li><strong>AI vs. human work</strong></li>
+<li><strong>Do you need an app?</strong></li>
+<li><strong>First 7 days</strong>, the <strong>path to $100</strong>, <strong>why it fails</strong>, and <strong>what evidence justifies more investment</strong></li>
+</ul>
+<p>All money and time figures below are <strong>estimates</strong> unless they&#39;re cited. Source numbers in [brackets] refer to <code>sources.md</code>. Price data from third-party blogs often conflicts; where it does, I give the range and flag it.</p>
+<h3>Short answer to &quot;do I need an app for these?&quot;</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Need an app?</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Listing photo/video makeovers</td>
+<td><strong>No</strong></td>
+<td>Higgsfield etc. <em>are</em> the app. A spreadsheet tracks prospects. What matters is sales and compliant labelling.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Content repurposing</td>
+<td><strong>Yes, a small one helps a lot</strong></td>
+<td>Delivery repeats weekly per client. Voice profiles, fact-checking and approvals save hours and protect quality. <strong>Built: Repurpose Desk.</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Dead-lead reactivation</td>
+<td><strong>No, and don&#39;t build one</strong></td>
+<td>SMS has to run through registered, compliant infrastructure (10DLC). HighLevel/Twilio cover it. A home-made texting bot is the riskiest possible shortcut.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Website makeovers</td>
+<td><strong>Partly</strong></td>
+<td>Builders exist. But an <strong>audit tool plus fast spec-site generator</strong> is a sales weapon: a personalised &quot;here&#39;s what&#39;s broken&quot; report, and a free-hosted site with no builder subscription. <strong>Built: Site Makeover Kit.</strong></td>
+</tr>
+<tr>
+<td>5</td>
+<td>AI UGC ads</td>
+<td><strong>No</strong></td>
+<td>Arcads/Creatify/Higgsfield are the app. The bottleneck is ad-strategy skill and FTC-compliant scripting, which software can&#39;t fix.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Support chatbots</td>
+<td><strong>No</strong></td>
+<td>Chatbase/Tidio are the app. The service is setup and <em>testing</em>. A spreadsheet of 50 test questions with expected answers is the only extra tool you need.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Unrevealed</td>
+<td><strong>Unknown</strong></td>
+<td>Not disclosed in the video.</td>
+</tr>
+</tbody></table></div>
+<hr>
+<h2>Method 1: AI-enhanced property listing photos and walkthrough videos</h2>
+<p><strong>The idea (video, 00:51–04:56).</strong> Find listings with bad photos, improve them with AI (Higgsfield), send before/afters free, and upsell AI &quot;cinematic walkthrough&quot; videos at about $100 per listing. Then move to monthly retainers.</p>
+<p><strong>How it actually works.</strong></p>
+<ol>
+<li>Pick one niche. Short-term-rental hosts are a better fit than real estate agents: Airbnb photos are marketing, while sale listings fall under MLS rules (see Risk).</li>
+<li>Find 30 listings with dark or crooked photos on Airbnb/Booking. Contact hosts through the platform&#39;s own messaging, not scraped emails. Zillow&#39;s terms prohibit automated scraping [21].</li>
+<li><strong>Ask before you edit.</strong> The photos belong to the host or their photographer. Offer: &quot;I can brighten and straighten your 5 darkest photos for free. Want me to?&quot;</li>
+<li>Edit with an AI tool. Do lighting, straightening, sky and white balance only. Don&#39;t add or remove permanent features.</li>
+<li>Deliver before/after pairs. Upsell a short video tour.</li>
+</ol>
+<p><strong>Customers and demand.</strong> Agents and hosts clearly pay for photo editing. An established market already exists: BoxBrownie lists image enhancement at about <strong>$1.60/image</strong> and virtual staging at <strong>$24–32/image</strong>, and AI editors like Imagen charge <strong>~$0.32/photo</strong> [10]. That&#39;s the problem: the market price for <em>editing</em> is very low. The $100 figure only holds if the video tour is valued.</p>
+<p><strong>Costs (estimate).</strong> Higgsfield&#39;s paid plans are reported at about $15–$39/mo entry level (sources conflict; Ultra is $99/mo) [1]. Video generation uses credits quickly. Minimum realistic outlay is <strong>~$15–40/mo</strong>.</p>
+<p><strong>Legal and platform risk: high.</strong></p>
+<ul>
+<li>MLS/state rules are tightening. California&#39;s CRMLS requires the <strong>original image alongside</strong> any digitally enhanced one plus a disclosure. Wisconsin Act 69 requires disclosure of materially altered images. NorthstarMLS has proposed similar rules. Florida Realtors advises labelling all virtually staged images [4].</li>
+<li>Airbnb reportedly asks hosts to remove AI-edited content that hides flaws or adds non-existent features. Booking.com and Expedia have similar rules [12].</li>
+<li>An AI &quot;walkthrough video&quot; generated from still photos can <strong>invent a layout that doesn&#39;t exist</strong>. That is misrepresentation risk for your client, and therefore for you.</li>
+<li>Cold-contacting agents by email must follow CAN-SPAM [13].</li>
+</ul>
+<p><strong>AI vs. human.</strong> AI does the editing and video generation. A human has to choose which edits stay honest, label outputs (&quot;virtually enhanced&quot;), and check every frame of the video for invented features.</p>
+<p><strong>Do you need an app?</strong> No. A checklist (&quot;no structural changes; label every enhanced image; keep originals&quot;) does more for this business than any software.</p>
+<p><strong>First 7 days.</strong> Find 30 listings with weak photos. Message 15 hosts offering a free 5-photo fix. Deliver 3–5 samples. Ask for a testimonial and a referral.
+<strong>Path to $100.</strong> Sell 2–3 photo-refresh packages at ~$40–50 to hosts (an estimate, priced against BoxBrownie&#39;s low per-image anchor).
+<strong>Why it fails.</strong> Cheap competitors set the price, platform/MLS rules limit what you can change, and AI videos misrepresent the space.
+<strong>Continue if:</strong> 3+ paying hosts out of the first 30 contacted, and no complaints about accuracy.</p>
+<hr>
+<h2>Method 2: Repurposing creators&#39; long-form content ✅ selected</h2>
+<p><strong>The idea (05:00–09:52).</strong> Turn a creator&#39;s podcast or YouTube episode into a newsletter, X post, LinkedIn post and short-form scripts in <em>their</em> voice, using a dedicated Claude Project per client. Win clients with a free sample. Charge monthly by volume (&quot;a few hundred to a couple of $1,000 per client&quot;). Quality control is what they pay for.</p>
+<p><strong>How it actually works.</strong></p>
+<ol>
+<li>Find creators publishing weekly long-form content who are missing a channel (podcast but no newsletter, YouTube but no LinkedIn).</li>
+<li>Pull one recent episode&#39;s transcript. YouTube auto-captions are free, or run Whisper locally.</li>
+<li>Build a voice profile from their own posts. Draft every format. <strong>Fact-check every number, quote and timestamp.</strong> Edit for voice.</li>
+<li>Send the free sample with one short, personal message.</li>
+<li>Convert to a paid pilot (one episode), then to a monthly plan (e.g. 4 episodes).</li>
+</ol>
+<p><strong>Customers and demand: evidence of real spending.</strong></p>
+<ul>
+<li>Podcast consumption is at a record: 58% of Americans 12+ consumed a podcast in the last month (Edison Infinite Dial 2026, via secondary coverage) [11]. Listen Notes indexes 3.7M+ podcasts, though many are inactive [11].</li>
+<li>People already sell this service: Fiverr has monthly &quot;podcast content partner&quot; repurposing gigs [5]. Podcast production agencies sell $350–$1,200/mo packages [5]. A newsletter/LinkedIn ghostwriting bundle sells at $2,497/mo [5].</li>
+<li>Self-serve tools exist and are cheap: <strong>Castmagic from ~$39/mo</strong> [6], CastNova ~$19/mo [5]. Your price must be justified by <em>voice and accuracy</em>, not by &quot;AI can do it&quot;, because the creator can buy that for $39.</li>
+</ul>
+<p><strong>Competitors.</strong> Self-serve AI tools (Castmagic, Opus Clip, Descript), freelancers on Fiverr/Upwork, and podcast agencies. The gap is creators too busy to run tools and edit output, who want done-for-you work that sounds like them.</p>
+<p><strong>Costs (estimate).</strong> <strong>$0</strong> to start: free transcripts, and Repurpose Desk&#39;s template mode works offline. A Claude Pro/API or other LLM subscription (~$20/mo) speeds drafting but is optional at first.</p>
+<p><strong>Legal and platform risk: low.</strong> You work on the client&#39;s own content with their permission. Main risks: misquoting the client (QC addresses this) and posting AI-written content under their name without approval. Always get sign-off.</p>
+<p><strong>AI vs. human.</strong> AI drafts formats and finds strong moments. A human checks facts and quotes, matches the voice, judges what&#39;s interesting, and handles the relationship.</p>
+<p><strong>Do you need an app?</strong> <strong>Yes, a small one, and it&#39;s built.</strong> The video&#39;s method (a Claude Project per client) covers drafting only. It has no fact-check, approval trail, time tracking, pipeline or client pack. Those are exactly the parts that decide whether a $300–600/mo client stays and whether your hourly rate is worth it. <strong>Repurpose Desk</strong> adds:</p>
+<ul>
+<li>voice profiles</li>
+<li>grounded drafts</li>
+<li>automatic QC (invented numbers or quotes, bad timestamps, banned words, platform limits)</li>
+<li>approve/override</li>
+<li>export</li>
+<li>prospect pipeline</li>
+<li>time and revenue tracking</li>
+</ul>
+<p><strong>First 7 days.</strong> List 20 creators → pick 5 → make 3 excellent free samples → send 3 personal messages → follow up once. See <code>validation/seven_day_plans.md</code>.
+<strong>Path to $100.</strong> One paid pilot at $100–150 for a full pack of one episode (estimate).
+<strong>Why it fails.</strong> Generic output (&quot;sounds like AI&quot;), no replies because samples are sent to creators who don&#39;t care about the missing channel, or underpricing into an hourly rate below minimum wage.
+<strong>Continue if:</strong> ≥3 replies from 15 personal samples, ≥1 paid pilot, and delivery time ≤2 hours per episode by episode 3.</p>
+<hr>
+<h2>Method 3: Dead-lead reactivation</h2>
+<p><strong>The idea (09:55–13:44).</strong> Load a business&#39;s old leads into HighLevel. Use AI to text them and handle replies with Conversation AI. Charge $50 to a few hundred dollars per booked and attended appointment.</p>
+<p><strong>How it actually works.</strong> You need:</p>
+<ul>
+<li>a client willing to hand over customer data</li>
+<li>a HighLevel (or similar) account</li>
+<li><strong>A2P 10DLC brand and campaign registration</strong>, without which US carriers block traffic (since Feb 2025, per secondary sources) [9]</li>
+<li>documented consent for each contact</li>
+<li>an AI agent configured with accurate prices and services</li>
+<li>appointment tracking good enough to bill per show</li>
+</ul>
+<p><strong>Customers and demand.</strong> Many local service businesses do sit on old leads, and agencies sell this service (the video acknowledges competition). This is strong demand in principle, but trust is a big barrier: a stranger asks for the customer list.</p>
+<p><strong>Costs (estimate).</strong> HighLevel Starter <strong>$97/mo</strong> plus an AI Employee add-on (<del>$50–97/mo) or per-message pricing, plus SMS/phone fees and registration fees [3]. Realistically **</del>$150–250/mo** before your first client pays.</p>
+<p><strong>Legal and platform risk: highest of the seven.</strong></p>
+<ul>
+<li><strong>TCPA</strong>: automated marketing texts generally need prior express written consent. An old inquiry may not cover it [9].</li>
+<li><strong>10DLC</strong>: brand and campaign registration, opt-in documentation and STOP/HELP handling are required [9].</li>
+<li>State &quot;mini-TCPA&quot; laws (e.g. Florida) add stricter rules [9].</li>
+<li><strong>Health data</strong>: the video&#39;s examples are dentists and med spas. Patient contact lists may be protected health information under HIPAA, which would require a business associate agreement <em>(my interpretation; not verified for any specific case, so get professional advice)</em>.</li>
+<li>Pay-per-show billing invites disputes about attribution.</li>
+</ul>
+<p><strong>AI vs. human.</strong> AI writes messages and handles routine replies. A human checks consent, handles complaints and escalations, checks prices, and reconciles bookings for billing.</p>
+<p><strong>Do you need an app?</strong> <strong>No, and don&#39;t build one.</strong> Compliance has to run through registered infrastructure. The useful tools are a <strong>consent-audit checklist</strong> and an <strong>ROI calculator</strong> for the pitch (&quot;500 old leads × 2% booked × $X = …&quot;).</p>
+<p><strong>First 7 days.</strong> Learn HighLevel on a trial. Write a compliant campaign. Pitch 10 local businesses that have their own opt-in lists (e.g. existing patients who opted into texts).
+<strong>Path to $100.</strong> One client, 1–2 shows at $50–100 each (video&#39;s range). This depends on carrier registration, which can take days to weeks.
+<strong>Why it fails.</strong> Running costs come before revenue, registration delays, consent problems, distrust from businesses, and attribution disputes.
+<strong>Continue if:</strong> a client provides a consented list <em>and</em> your first campaign books shows at a cost per show well under your fee.</p>
+<hr>
+<h2>Method 4: Website makeovers for local businesses ✅ selected (second)</h2>
+<p><strong>The idea (13:46–17:46).</strong> Find local businesses with bad websites on Google Maps. Build a better site with an AI builder. Email it as a free sample. Charge &quot;a few hundred to a couple thousand&quot; plus monthly care.</p>
+<p><strong>How it actually works.</strong></p>
+<ol>
+<li>Search one trade in one town.</li>
+<li>Audit each site: mobile, HTTPS, click-to-call, clear services, speed.</li>
+<li>Build a spec one-page site with their real details.</li>
+<li>Send a short, honest email that names the problems you found.</li>
+<li>Charge to launch on their domain, then offer monthly hosting and edits.</li>
+</ol>
+<p><strong>Customers and demand.</strong> Strong and ongoing. Freelancer site prices range from <strong>$500–$5,000</strong> (beginner to mid) up to $10k, and redesigns cost about as much as new builds [7]. A beginner charging $300–800 is clearly below market, which helps conversion. Many tradespeople get work from referrals and don&#39;t care about their site, so qualify by whether they run Google Ads or post a lot online.</p>
+<p><strong>Competitors.</strong> Crowded: agencies, freelancers, AI builders (Durable from ~$12–15/mo; its free plan only offers a subdomain) [8], Wix and Squarespace. Stand out by focusing on calls and bookings, not looks (the video&#39;s own advice).</p>
+<p><strong>Costs (estimate).</strong> <strong>$0</strong> with static hosting (Netlify, Cloudflare Pages, GitHub Pages free tiers). Domain ~$10–20/yr, usually paid by the client. An AI builder subscription is optional.</p>
+<p><strong>Legal and platform risk: low-to-medium.</strong> Cold email must follow CAN-SPAM: accurate sender, physical address, working opt-out, honour opt-outs within 10 business days [13]. Use their real reviews and photos only with permission. Never invent testimonials (FTC rule [2]). A spec site should not be public or indexed before they agree.</p>
+<p><strong>AI vs. human.</strong> AI or templates handle layout and copy drafts. A human picks <em>which</em> businesses to approach, checks facts (hours, services, licence numbers), writes a credible outreach message, and handles domain and DNS hand-off.</p>
+<p><strong>Do you need an app?</strong> <strong>Partly, and it&#39;s built.</strong> <strong>Site Makeover Kit</strong> fetches and audits a prospect&#39;s site, writes a client-friendly audit report (the honest hook for your email), generates a fast mobile-first one-page site from their real details, drafts the outreach email with the CAN-SPAM footer, and tracks the pipeline. It saves the builder subscription, and it makes each pitch specific instead of generic.</p>
+<p><strong>First 7 days.</strong> Audit 30 sites in one trade → build 5 spec sites → send 5–10 personalised emails → follow up once.
+<strong>Path to $100.</strong> One $150–300 &quot;launch&quot; sale, or a $100 tune-up of an existing site (e.g. adding click-to-call and fixing mobile issues).
+<strong>Why it fails.</strong> Spec work wasted on owners who don&#39;t care, generic emails that get ignored, and one-off revenue with no care plan.
+<strong>Continue if:</strong> ≥1 sale from the first 20 emails, or ≥3 &quot;tell me more&quot; replies.</p>
+<hr>
+<h2>Method 5: AI-generated UGC-style ads</h2>
+<p><strong>The idea (17:48–21:21).</strong> Use an AI ad tool to produce UGC-style videos with AI avatars holding the brand&#39;s product, then sell ad packages or retainers to brands. Gadzhi warns it&#39;s crowded and needs real ad skill.</p>
+<p><strong>Customers and demand.</strong> Brands do buy lots of ad creative (the video&#39;s $100–600 per video applies to <em>real</em> creators). But the tools are self-serve and cheap: Creatify <strong>$39–99/mo</strong>, Arcads <strong>~$110/mo for ~10 videos</strong> (≈ $11/video) [14]. Brands can make these themselves, so you need strategy to be worth paying.</p>
+<p><strong>Costs (estimate).</strong> $39–110/mo for tools before any client.</p>
+<p><strong>Legal and platform risk: high.</strong></p>
+<ul>
+<li>The FTC&#39;s final rule on fake reviews and testimonials (in force since Oct 2024) bans <strong>testimonials from people who don&#39;t exist or who misrepresent their experience</strong>, explicitly including AI-generated ones, with civil penalties [2]. The video&#39;s demo script, an AI avatar saying &quot;everyone kept asking me… I&#39;ve had so many compliments&quot;, is a first-person consumer testimonial from a non-existent person. <strong>Avoid this format.</strong> Use clearly fictional or brand-voiced scripts instead (&quot;Here&#39;s what [brand] does…&quot;).</li>
+<li>TikTok requires disclosure labels on realistic AI-generated ad content, with detection via C2PA [15].</li>
+<li>Product claims (cosmetics, supplements) must be substantiated by the brand.</li>
+</ul>
+<p><strong>AI vs. human.</strong> AI handles avatars, voice and edits. A human handles strategy (hooks, angles, offers), compliance review and performance analysis.</p>
+<p><strong>Do you need an app?</strong> No. The ad platforms are the app. Building a generator is pointless.</p>
+<p><strong>First 7 days.</strong> Study 50 winning ads in one product category. Make 5 compliant spec ads for a small brand. Pitch 10 brands.
+<strong>Path to $100.</strong> Sell a 3-ad test pack for ~$100–150 to a small e-commerce brand (estimate). This is hard without proven results.
+<strong>Why it fails.</strong> No ad expertise, crowded market, brands doing it themselves, and compliance issues with fake testimonials.
+<strong>Continue if:</strong> a client&#39;s ad <em>performs</em> (they rerun or scale it), not just &quot;they liked it&quot;.</p>
+<hr>
+<h2>Method 6: AI customer-support chatbots for businesses</h2>
+<p><strong>The idea (21:23–24:42).</strong> Set up Chatbase or Tidio for a business. Train it on their website, FAQs and policies. Write guardrails, test thoroughly, and charge a setup fee plus a monthly fee (no figures given).</p>
+<p><strong>Customers and demand.</strong> Moderate. Many small businesses want fewer repeat questions, but the tools are designed for self-serve. Your value is setup and testing, and the business can skip you.</p>
+<p><strong>Costs (estimate).</strong> Chatbase free plan: 100 message credits, and it <strong>deletes bots after 14 days of inactivity</strong>. Paid plans start at ~$32–40/mo (sources conflict) [16]. Tidio&#39;s Lyro AI from ~$39/mo [17]. The client typically pays for the subscription.</p>
+<p><strong>Legal and platform risk: medium.</strong> Businesses are liable for what their bot says. In <em>Moffatt v. Air Canada</em> (2024), a tribunal held the airline liable for its chatbot&#39;s wrong refund information [18]. The video agrees: &quot;the blame lands on you&quot; (24:34–24:38). You also handle customer conversations, so privacy matters.</p>
+<p><strong>AI vs. human.</strong> AI answers routine questions. A human curates the knowledge base, writes guardrails, runs a 50-question test set, sets up escalation, and does monthly reviews.</p>
+<p><strong>Do you need an app?</strong> No. A <strong>test-question spreadsheet</strong> (question, expected answer, bot answer, pass/fail) is the differentiator, and it&#39;s also your sales demo.</p>
+<p><strong>First 7 days.</strong> Build a free demo bot on one local business&#39;s public FAQ (don&#39;t deploy it on their site). Record a 60-second screen video of it answering correctly <em>and</em> handing off when unsure. Show it to 10 businesses with lots of FAQs (e.g. dog groomers, letting agents).
+<strong>Path to $100.</strong> One $100–200 setup fee (estimate).
+<strong>Why it fails.</strong> Businesses buy the tool directly, bots give wrong answers, and the monthly fee seems unjustified once it&#39;s set up.
+<strong>Continue if:</strong> 1 paying setup plus a client willing to pay monthly for tuning after seeing real transcripts.</p>
+<hr>
+<h2>Method 7: Unrevealed &quot;S tier&quot;</h2>
+<p>The video doesn&#39;t say what this is (24:46–26:24). It promotes a free 5-day &quot;AI Income Challenge&quot; (Nov 7) instead. No workflow, cost or evidence was given, so it <strong>can&#39;t be scored</strong>. My recommendation: if you want to learn it, attend the free event, but don&#39;t buy any upsell until you can see the method&#39;s evidence for yourself. Judge it with the same scorecard.</p>
+<p class="foot">Source: <code>research/seven_methods.md</code></p></article></main></div></body></html>

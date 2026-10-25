@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sources · AI Money Lab</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"><style>
+/* Layout: a fixed contents rail beside one reading column; rail becomes a scrolling strip on phones. */
+:root {
+  --paper: #fafaf8; --ink: #1d2430; --muted: #5b6473; --rule: #e1e4ea; --panel: #f1f3f6;
+  --accent: #24467a; --accent-soft: #e6ecf6; --ok: #1f7a45; --warn: #9a5b00;
+  --display: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #13161c; --ink: #e5e8ee; --muted: #9aa3b2; --rule: #2a303b; --panel: #1b1f27;
+  --accent: #93b2e8; --accent-soft: #1f2a3f; --ok: #6fd39a; --warn: #f0b860; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #13161c; --ink: #e5e8ee; --muted: #9aa3b2; --rule: #2a303b; --panel: #1b1f27;
+  --accent: #93b2e8; --accent-soft: #1f2a3f; --ok: #6fd39a; --warn: #f0b860; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.6 var(--body); }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.shell { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 3rem; max-width: 76rem; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 2.5rem 4rem; }
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 1.5rem); align-self: start; display: flex; flex-direction: column; gap: 1.25rem; }
+.brand { font-family: var(--display); font-size: 1.15rem; font-weight: 600; line-height: 1.25; color: var(--ink); text-decoration: none; }
+.brand small { display: block; font-family: var(--body); font-size: .78rem; font-weight: 400; color: var(--muted); margin-top: .25rem; }
+.toc { display: flex; flex-direction: column; gap: 2px; }
+.toc a, .toc button { display: block; text-align: left; padding: .38rem .6rem; border-radius: 6px; border: 0; background: none; font: 500 .9rem/1.35 var(--body); color: var(--muted); text-decoration: none; cursor: pointer; }
+.toc a:hover, .toc button:hover { color: var(--ink); background: var(--panel); }
+.toc [aria-current="page"] { color: var(--accent); background: var(--accent-soft); }
+.live { border-top: 1px solid var(--rule); padding-top: 1rem; display: flex; flex-direction: column; gap: .35rem; font-size: .85rem; }
+.live b { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+main { min-width: 0; }
+.doc { max-width: 46rem; }
+.doc h1 { font: 600 clamp(1.8rem, 4vw, 2.4rem)/1.15 var(--display); margin: 0 0 1rem; text-wrap: balance; letter-spacing: -.01em; }
+.doc h2 { font: 600 1.45rem/1.25 var(--display); margin: 2.4rem 0 .6rem; padding-top: 1.2rem; border-top: 1px solid var(--rule); text-wrap: balance; }
+.doc h3 { font: 600 1.08rem/1.35 var(--body); margin: 1.8rem 0 .4rem; }
+.doc h4 { font: 600 1rem/1.35 var(--body); margin: 1.4rem 0 .3rem; color: var(--muted); }
+.doc p, .doc li { max-width: 68ch; }
+.doc ul, .doc ol { padding-left: 1.3rem; }
+.doc li { margin: .2rem 0; }
+.doc hr { border: 0; border-top: 1px solid var(--rule); margin: 2rem 0; }
+.doc blockquote { margin: 1rem 0; padding: .75rem 1rem; border-left: 3px solid var(--accent); background: var(--panel); border-radius: 0 6px 6px 0; }
+.doc blockquote p { margin: .4rem 0; }
+.doc code { font: .86em var(--mono); background: var(--panel); padding: .1em .35em; border-radius: 4px; overflow-wrap: anywhere; }
+.doc pre { background: var(--panel); padding: 1rem; border-radius: 8px; overflow-x: auto; }
+.doc pre code { background: none; padding: 0; overflow-wrap: normal; }
+.tw { overflow-x: auto; margin: 1rem 0 1.4rem; border: 1px solid var(--rule); border-radius: 8px; }
+.doc table { border-collapse: collapse; width: 100%; font-size: .9rem; font-variant-numeric: tabular-nums; }
+.doc th, .doc td { text-align: left; vertical-align: top; padding: .5rem .7rem; border-bottom: 1px solid var(--rule); }
+.doc th { background: var(--panel); font-weight: 600; font-size: .8rem; color: var(--muted); white-space: nowrap; }
+.doc tr:last-child td { border-bottom: 0; }
+.doc td.num { text-align: right; }
+.tag { display: inline-block; font-size: .75rem; font-weight: 600; padding: 0 .5rem; border-radius: 999px; background: var(--panel); color: var(--muted); }
+.tag-payment { background: var(--accent-soft); color: var(--accent); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 1rem; margin: 1.5rem 0 2rem; }
+.card { display: flex; flex-direction: column; gap: .3rem; padding: 1rem 1.1rem; border: 1px solid var(--rule); border-radius: 8px; text-decoration: none; color: var(--ink); background: var(--paper); }
+.card:hover { border-color: var(--accent); }
+.card strong { font: 600 1.05rem/1.3 var(--display); color: var(--accent); }
+.card span { color: var(--muted); font-size: .9rem; }
+.lede { font-size: 1.08rem; color: var(--muted); max-width: 62ch; }
+.foot { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: .82rem; color: var(--muted); }
+@media (max-width: 860px) {
+  .shell { grid-template-columns: 1fr; gap: 1.5rem; padding-block: 1.25rem 3rem; }
+  .rail { position: static; }
+  .toc { flex-direction: row; overflow-x: auto; gap: 4px; padding-bottom: 4px; }
+  .toc a, .toc button { white-space: nowrap; }
+  .live { flex-direction: row; flex-wrap: wrap; gap: .4rem 1rem; }
+  .live b { width: 100%; }
+}
+</style></head>
+<body><div class="shell"><aside class="rail"><a class="brand" href="index.html">AI Money Lab<small>Research and prototypes</small></a><nav class="toc" aria-label="Documents"><a href="index.html">Overview</a><a href="report.html">Final report</a><a href="video.html">Video notes</a><a href="methods.html">The seven methods</a><a href="scorecard.html">Feasibility scorecard</a><a href="picks.html">Recommendations</a><a href="plans.html">7-day plans</a><a href="outreach.html">Outreach templates</a><a href="tracker.html">Experiment tracker</a><a href="sources.html" aria-current="page">Sources</a></nav><div class="live"><b>Live apps</b>
+<a href="https://repurpose-desk-flux.onrender.com" target="_blank" rel="noopener noreferrer">Repurpose Desk</a>
+<a href="https://site-makeover-kit.onrender.com" target="_blank" rel="noopener noreferrer">Site Makeover Kit</a>
+<a href="https://claude.ai/artifact/CdEKPZyz5YMNcks6iPKq8t" target="_blank" rel="noopener noreferrer">Scorecard chart</a>
+<a href="https://github.com/rubberly/ai-money-making-lab" target="_blank" rel="noopener noreferrer">GitHub repo</a></div></aside>
+<main><article class="doc"><h1>Sources</h1>
+<p>Accessed 2026-10-25. Many pricing pages are <strong>third-party</strong> (vendor blogs, review sites, sometimes competitors) and they conflict. Check the official pricing page before buying anything. Items marked <em>(secondary)</em> summarise a primary source I did not open directly.</p>
+<h2>The video</h2>
+<ul>
+<li>[19] Mark Tilbury, &quot;7 Proven Ways to Make Money With AI (No Experience)&quot;, YouTube, published 2026-10-24: <a href="https://www.youtube.com/watch?v=hriu0irRcpE" target="_blank" rel="noopener noreferrer">https://www.youtube.com/watch?v=hriu0irRcpE</a>. Metadata, description and chapters were fetched from the page. Auto-generated English captions were retrieved with <code>youtube-transcript-api</code>. The video itself was not watched (Chrome showed &quot;Site blocked&quot; for YouTube).</li>
+<li>[20] Context on Iman Gadzhi&#39;s challenge funnels <em>(secondary, unverified)</em>: <a href="https://marksinsights.com/make-money-online-challenge-iman-gadzhi/" target="_blank" rel="noopener noreferrer">https://marksinsights.com/make-money-online-challenge-iman-gadzhi/</a> · <a href="https://sozai.app/transcript/start-373-day-side-hustle/" target="_blank" rel="noopener noreferrer">https://sozai.app/transcript/start-373-day-side-hustle/</a></li>
+</ul>
+<h2>Pricing and market</h2>
+<ul>
+<li>[1] Higgsfield pricing: <a href="https://creatify.ai/blog/higgsfield-pricing-(2026)-plans-and-what-you-ll-actually-pay" target="_blank" rel="noopener noreferrer">https://creatify.ai/blog/higgsfield-pricing-(2026)-plans-and-what-you-ll-actually-pay</a> (competitor blog) · <a href="https://geo.higgsfield.ai/higgsfield-ai-pricing-and-plans-2026" target="_blank" rel="noopener noreferrer">https://geo.higgsfield.ai/higgsfield-ai-pricing-and-plans-2026</a> · official: <a href="https://higgsfield.ai/pricing" target="_blank" rel="noopener noreferrer">https://higgsfield.ai/pricing</a></li>
+<li>[3] HighLevel pricing and AI add-ons: <a href="https://netpartners.marketing/gohighlevel-pricing-plans-explained-features-value-cost-comparison-2026/" target="_blank" rel="noopener noreferrer">https://netpartners.marketing/gohighlevel-pricing-plans-explained-features-value-cost-comparison-2026/</a> · <a href="https://botpenguin.com/blogs/gohighlevel-ai-pricing" target="_blank" rel="noopener noreferrer">https://botpenguin.com/blogs/gohighlevel-ai-pricing</a></li>
+<li>[5] Content repurposing market: Fiverr gig <a href="https://fiverr.com/apexdigitalops/be-your-monthly-podcast-content-partner-for-ongoing-repurposing" target="_blank" rel="noopener noreferrer">https://fiverr.com/apexdigitalops/be-your-monthly-podcast-content-partner-for-ongoing-repurposing</a> · ghostwriting bundle <a href="https://newsletterwriting.gumroad.com/l/complete" target="_blank" rel="noopener noreferrer">https://newsletterwriting.gumroad.com/l/complete</a> · CastNova <a href="https://alternativeto.net/software/castnova/about" target="_blank" rel="noopener noreferrer">https://alternativeto.net/software/castnova/about</a> · agency packages ($350–1,200/mo) reported in search results alongside <a href="https://getthehi.lovable.app/podcast-repurposing" target="_blank" rel="noopener noreferrer">https://getthehi.lovable.app/podcast-repurposing</a></li>
+<li>[6] Castmagic pricing: <a href="https://www.trustradius.com/products/castmagic" target="_blank" rel="noopener noreferrer">https://www.trustradius.com/products/castmagic</a> · official: <a href="https://www.castmagic.io/pricing" target="_blank" rel="noopener noreferrer">https://www.castmagic.io/pricing</a></li>
+<li>[7] Website design costs 2026: <a href="https://www.925studios.co/blog/website-redesign-cost-agency-vs-freelancer" target="_blank" rel="noopener noreferrer">https://www.925studios.co/blog/website-redesign-cost-agency-vs-freelancer</a> · <a href="https://www.levitate.ai/blog-posts/average-website-design-cost-for-small-businesses-in-2026" target="_blank" rel="noopener noreferrer">https://www.levitate.ai/blog-posts/average-website-design-cost-for-small-businesses-in-2026</a> · <a href="https://whito.co.uk/research/website-design-costs-uk/" target="_blank" rel="noopener noreferrer">https://whito.co.uk/research/website-design-costs-uk/</a></li>
+<li>[8] Durable pricing: <a href="https://www.techradar.com/pro/software-services/durable" target="_blank" rel="noopener noreferrer">https://www.techradar.com/pro/software-services/durable</a> · <a href="https://dailyaifixs.com/blog/durable-pricing-2026-free-is-just-a-subdomain" target="_blank" rel="noopener noreferrer">https://dailyaifixs.com/blog/durable-pricing-2026-free-is-just-a-subdomain</a></li>
+<li>[10] Real estate photo editing prices (published by competitor Imagen): <a href="https://imagen-ai.com/post/virtual-staging-companies/" target="_blank" rel="noopener noreferrer">https://imagen-ai.com/post/virtual-staging-companies/</a> · <a href="https://imagen-ai.com/valuable-tips/real-estate-photo-editing-services/" target="_blank" rel="noopener noreferrer">https://imagen-ai.com/valuable-tips/real-estate-photo-editing-services/</a></li>
+<li>[11] Podcast audience: Edison Research Infinite Dial 2026 <em>(secondary)</em>: <a href="https://www.tubefilter.com/2026/03/20/edison-research-infinite-dial-video-podcast-report/" target="_blank" rel="noopener noreferrer">https://www.tubefilter.com/2026/03/20/edison-research-infinite-dial-video-podcast-report/</a> · <a href="https://news.radio-online.com/articles/n48657/Podcast-Online-Audio-Use-Hit-New-Highs-in-US" target="_blank" rel="noopener noreferrer">https://news.radio-online.com/articles/n48657/Podcast-Online-Audio-Use-Hit-New-Highs-in-US</a> · Listen Notes count via <a href="https://www.podderapp.com/post/podcast-listener-statistics-2026" target="_blank" rel="noopener noreferrer">https://www.podderapp.com/post/podcast-listener-statistics-2026</a></li>
+<li>[14] Arcads/Creatify pricing: <a href="https://www.eesel.ai/en/blog/arcads-ai-pricing" target="_blank" rel="noopener noreferrer">https://www.eesel.ai/en/blog/arcads-ai-pricing</a> · <a href="https://creatify.ai/blog/arcads-pricing-(2026)-plans-credits-and-what-you-ll-actually-pay" target="_blank" rel="noopener noreferrer">https://creatify.ai/blog/arcads-pricing-(2026)-plans-credits-and-what-you-ll-actually-pay</a> (competitor)</li>
+<li>[16] Chatbase pricing: <a href="https://www.eesel.ai/blog/chatbase-pricing" target="_blank" rel="noopener noreferrer">https://www.eesel.ai/blog/chatbase-pricing</a> · <a href="https://chatarmin.com/en/blog/chatbase-pricing" target="_blank" rel="noopener noreferrer">https://chatarmin.com/en/blog/chatbase-pricing</a> · official: <a href="https://www.chatbase.co/pricing" target="_blank" rel="noopener noreferrer">https://www.chatbase.co/pricing</a></li>
+<li>[17] Tidio pricing: <a href="https://www.dragapp.com/blog/tidio-pricing/" target="_blank" rel="noopener noreferrer">https://www.dragapp.com/blog/tidio-pricing/</a> · <a href="https://chatarmin.com/en/blog/tidio-pricing" target="_blank" rel="noopener noreferrer">https://chatarmin.com/en/blog/tidio-pricing</a></li>
+</ul>
+<h2>Legal, regulatory and platform rules</h2>
+<ul>
+<li>[2] FTC final rule on fake reviews and testimonials, including AI-generated ones (Aug 2024; effective Oct 2024) <em>(secondary, law-firm summaries)</em>: <a href="https://www.sidley.com/en/insights/newsupdates/2024/08/us-ftcs-new-rule-on-fake-and-ai-generated-reviews-and-social-media-bots" target="_blank" rel="noopener noreferrer">https://www.sidley.com/en/insights/newsupdates/2024/08/us-ftcs-new-rule-on-fake-and-ai-generated-reviews-and-social-media-bots</a> · <a href="https://www.mintz.com/insights-center/viewpoints/2191/2024-08-21-ftc-cracks-down-ai-generated-fake-reviews-ai-washington" target="_blank" rel="noopener noreferrer">https://www.mintz.com/insights-center/viewpoints/2191/2024-08-21-ftc-cracks-down-ai-generated-fake-reviews-ai-washington</a> · <a href="https://hunton.com/hunton-retail-law-resource/ftc-issues-final-rule-targeting-fake-consumer-reviews-and-testimonials-including-those-generated-by-artificial-intelligence-ai-and-online-bots" target="_blank" rel="noopener noreferrer">https://hunton.com/hunton-retail-law-resource/ftc-issues-final-rule-targeting-fake-consumer-reviews-and-testimonials-including-those-generated-by-artificial-intelligence-ai-and-online-bots</a></li>
+<li>[4] AI-enhanced listing photo rules: <a href="https://theclose.com/news-ai-listing-photo-rules/" target="_blank" rel="noopener noreferrer">https://theclose.com/news-ai-listing-photo-rules/</a> · <a href="https://northstarmls.com/insights/guidelines-for-virtual-staging-and-ai-enhanced-listing-photos/" target="_blank" rel="noopener noreferrer">https://northstarmls.com/insights/guidelines-for-virtual-staging-and-ai-enhanced-listing-photos/</a> · <a href="https://www.floridarealtors.org/news-media/news-articles/2025/05/3-things-know-about-virtual-staging" target="_blank" rel="noopener noreferrer">https://www.floridarealtors.org/news-media/news-articles/2025/05/3-things-know-about-virtual-staging</a> · <a href="https://blog.crmls.org/?p=3088" target="_blank" rel="noopener noreferrer">https://blog.crmls.org/?p=3088</a></li>
+<li>[9] TCPA / A2P 10DLC SMS compliance <em>(vendor guides; not legal advice)</em>: <a href="https://www.infobip.com/blog/tcpa-compliance-sms" target="_blank" rel="noopener noreferrer">https://www.infobip.com/blog/tcpa-compliance-sms</a> · <a href="https://activeprospect.com/blog/sms-marketing-tcpa-regulations/" target="_blank" rel="noopener noreferrer">https://activeprospect.com/blog/sms-marketing-tcpa-regulations/</a></li>
+<li>[12] Airbnb/Booking/Expedia and AI listing images <em>(secondary)</em>: <a href="https://www.canberratimes.com.au/story/9307149/" target="_blank" rel="noopener noreferrer">https://www.canberratimes.com.au/story/9307149/</a> · <a href="https://www.cp24.com/local/toronto/2026/07/14/this-family-thought-they-booked-an-amazing-toronto-airbnb-they-say-ai-was-used-to-generate-the-photos/" target="_blank" rel="noopener noreferrer">https://www.cp24.com/local/toronto/2026/07/14/this-family-thought-they-booked-an-amazing-toronto-airbnb-they-say-ai-was-used-to-generate-the-photos/</a></li>
+<li>[13] CAN-SPAM for B2B cold email: official guide <a href="https://www.ftc.gov/business-guidance/resources/can-spam-act-compliance-guide-business" target="_blank" rel="noopener noreferrer">https://www.ftc.gov/business-guidance/resources/can-spam-act-compliance-guide-business</a> · summaries <a href="https://www.salesforge.ai/blog/cold-emailing-can-spam-what-to-know" target="_blank" rel="noopener noreferrer">https://www.salesforge.ai/blog/cold-emailing-can-spam-what-to-know</a> · <a href="https://leadhaste.com/blog/can-spam-compliance-cold-email-2026" target="_blank" rel="noopener noreferrer">https://leadhaste.com/blog/can-spam-compliance-cold-email-2026</a></li>
+<li>[15] TikTok AI-generated content labelling for ads <em>(agency blogs)</em>: <a href="https://www.stellarsearch.co.uk/insight/tiktoks-ai-ad-disclosure-rules-are-live-what-brands-running-ai-creative-need-to-do-now" target="_blank" rel="noopener noreferrer">https://www.stellarsearch.co.uk/insight/tiktoks-ai-ad-disclosure-rules-are-live-what-brands-running-ai-creative-need-to-do-now</a> · <a href="https://news.ainauten.com/en/story/tiktoks-policy-for-ai-ads-isnt-working" target="_blank" rel="noopener noreferrer">https://news.ainauten.com/en/story/tiktoks-policy-for-ai-ads-isnt-working</a></li>
+<li>[18] <em>Moffatt v. Air Canada</em>, 2024 BCCRT 149 (chatbot liability): <a href="https://www.americanbar.org/groups/business_law/resources/business-law-today/2024-february/bc-tribunal-confirms-companies-remain-liable-information-provided-ai-chatbot/" target="_blank" rel="noopener noreferrer">https://www.americanbar.org/groups/business_law/resources/business-law-today/2024-february/bc-tribunal-confirms-companies-remain-liable-information-provided-ai-chatbot/</a> · <a href="https://www.mccarthy.ca/en/insights/blogs/techlex/moffatt-v-air-canada-misrepresentation-ai-chatbot" target="_blank" rel="noopener noreferrer">https://www.mccarthy.ca/en/insights/blogs/techlex/moffatt-v-air-canada-misrepresentation-ai-chatbot</a></li>
+<li>[21] Zillow terms on scraping <em>(secondary; check Zillow&#39;s own Terms of Use)</em>: <a href="https://webscraping.ai/faq/zillow-scraping/can-i-scrape-zillow-listings-for-commercial-use" target="_blank" rel="noopener noreferrer">https://webscraping.ai/faq/zillow-scraping/can-i-scrape-zillow-listings-for-commercial-use</a> · <a href="https://forum.we-get-around.com/topic/14144/inman-zillow-orders-data-company-to-stop-scraping-its-content/" target="_blank" rel="noopener noreferrer">https://forum.we-get-around.com/topic/14144/inman-zillow-orders-data-company-to-stop-scraping-its-content/</a></li>
+</ul>
+<h2>Not used as evidence</h2>
+<p>Income screenshots, &quot;$X/day&quot; claims (including the video&#39;s $373/day), course sales pages and affiliate listicles were <strong>not</strong> treated as evidence of typical results.</p>
+<p class="foot">Source: <code>research/sources.md</code></p></article></main></div></body></html>
