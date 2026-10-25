@@ -35,12 +35,11 @@ ai-money-making-lab/
 | Site Makeover Kit (workspace, with Start here course) | https://site-makeover-kit.onrender.com |
 | Site Makeover Kit offer page | https://site-makeover-kit.onrender.com/offer |
 
-- **No login:**  is "false" in , so anyone with a link can open the workspaces and see or edit what's saved there. Set it to "true" to require  + the  from each service's Environment tab.
-- **Deploys:** pushing to  redeploys everything (Blueprint ).
+- **No login:** `REQUIRE_LOGIN` is `"false"` in `render.yaml`, so anyone with a link can open the workspaces and see or edit what's saved there. Set it to `"true"` to require the username `lucas` plus the `APP_PASSWORD` from each service's Environment tab.
+- **Deploys:** pushing to `main` redeploys everything (Blueprint `ai-money-making-lab`).
 - **Free plan limits:** the apps sleep when idle (the first load can take about a minute), and **saved data is wiped on every restart or redeploy**. Download backups.
 
-**HTML site source:**  is built from the Markdown files and . To rebuild: up to date in 2s
-built 12 pages in html
+**HTML site source:** `html/` is built from the Markdown files and `research/scorecard.csv`. To rebuild: `cd tools && npm install marked@12.0.2 && cd .. && node tools/build-html.mjs .`
 
 ## Run the prototypes (Node.js 20+, no install needed)
 
