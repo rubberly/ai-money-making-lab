@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Website makeovers for local businesses</title>
+  <meta name="description" content="A fast, mobile-friendly website for your local business. See a free sample first, then decide.">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body class="offer">
+  <header class="offer-hero">
+    <div class="offer-wrap">
+      <p class="offer-eyebrow" id="brand">Website Makeovers</p>
+      <h1>Your customers are on their phones. Is your website?</h1>
+      <p class="offer-lead">I rebuild outdated local-business websites into fast, mobile-friendly sites with a tap-to-call button and a simple enquiry form. You see a free sample of your own site first, then decide. No obligation.</p>
+      <a class="btn" href="#interest">Ask for a free sample</a>
+    </div>
+  </header>
+
+  <main class="offer-wrap">
+    <div class="notice info" role="note"><strong>Prototype offer page.</strong> Payments are in test mode: the "Reserve (test mode)" buttons record a test order and never take money.</div>
+
+    <section>
+      <h2>How it works</h2>
+      <ol class="offer-steps">
+        <li><strong>Free check.</strong> I look at your current site on a phone and list what's costing you enquiries.</li>
+        <li><strong>Free sample.</strong> I build a one-page sample using your real services, hours and contact details.</li>
+        <li><strong>You decide.</strong> If you like it, I finish it and put it live on your domain. If not, no charge.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Packages</h2>
+      <div class="grid3" id="tiers"><div class="panel muted">Loading packages…</div></div>
+    </section>
+
+    <section id="interest">
+      <div class="panel">
+        <h2>Ask for a free sample</h2>
+        <form id="leadForm" novalidate>
+          <div class="fields">
+            <label class="field" data-field="name"><span>Your name *</span><input name="name" autocomplete="name" required><span class="err"></span></label>
+            <label class="field" data-field="email"><span>Email *</span><input name="email" type="email" autocomplete="email" required><span class="err"></span></label>
+            <label class="field" data-field="business"><span>Business name</span><input name="business"><span class="err"></span></label>
+            <label class="field" data-field="website"><span>Current website</span><input name="website" placeholder="yourbusiness.com"><span class="err"></span></label>
+            <label class="field full" data-field="message"><span>Anything I should know?</span><textarea name="message" rows="3"></textarea><span class="err"></span></label>
+            <label class="hp" aria-hidden="true">Leave empty<input name="company_url" tabindex="-1" autocomplete="off"></label>
+          </div>
+          <div class="actions"><button class="btn" type="submit">Send</button><span id="leadStatus" class="small" role="status"></span></div>
+          <p class="small muted">Your details are only used to reply to this request.</p>
+        </form>
+      </div>
+    </section>
+
+    <dialog id="orderDialog">
+      <form id="orderForm" novalidate>
+        <h2 id="orderTitle">Reserve (test mode)</h2>
+        <p class="notice warn">TEST MODE: no card details are collected and no payment is taken.</p>
+        <label class="field" data-field="name"><span>Name *</span><input name="name" required><span class="err"></span></label>
+        <label class="field" data-field="email"><span>Email *</span><input name="email" type="email" required><span class="err"></span></label>
+        <div class="actions"><button class="btn" type="submit">Record test order</button><button class="btn secondary" type="button" id="closeDialog">Cancel</button></div>
+        <p id="orderStatus" class="small" role="status"></p>
+      </form>
+    </dialog>
+  </main>
+  <footer class="offer-foot offer-wrap small muted">Prototype built with Site Makeover Kit.</footer>
+  <script type="module" src="/assets/offer.js"></script>
+</body>
+</html>

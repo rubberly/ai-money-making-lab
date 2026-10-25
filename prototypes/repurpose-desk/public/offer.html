@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Podcast to Posts</title>
+  <meta name="description" content="Every episode you record, turned into a newsletter, LinkedIn post, X thread and clip plan that sound like you. Reviewed by a human before you see it.">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    body { background: var(--bg); }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 0 16px; }
+    header.hero { padding: 56px 0 28px; }
+    .hero h1 { font-size: clamp(28px, 5vw, 44px); line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.01em; }
+    .hero p { font-size: 18px; color: var(--muted); max-width: 640px; }
+    .plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin: 24px 0; }
+    .plan { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
+    .plan.featured { border: 2px solid var(--accent); }
+    .price { font-size: 32px; font-weight: 800; }
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+    .steps div { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+    .steps b { display: block; color: var(--accent); }
+    footer { color: var(--muted); font-size: 13px; padding: 30px 0 50px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <span class="pill">For podcasters &amp; YouTubers who publish every week</span>
+      <h1>You already made the content. Let's get it in front of people who don't listen to podcasts.</h1>
+      <p>Send me each new episode. Within 48 hours you get a newsletter, a LinkedIn post, an X thread and three clip picks with timestamps, written in your voice and checked line by line against what you actually said.</p>
+      <div class="row" style="margin-top:16px"><a class="btn primary" href="#start">Get one episode done free</a><a class="btn" href="#how">How it works</a></div>
+    </header>
+
+    <section id="how" class="card">
+      <h2>How it works</h2>
+      <div class="steps">
+        <div><b>1. Voice setup</b>You share 3–5 posts you've written. I build a voice profile so nothing reads like a robot.</div>
+        <div><b>2. Each episode</b>You publish as normal. I pull the transcript and draft every piece.</div>
+        <div><b>3. Fact check</b>Every number, quote and timestamp is checked against your episode. Nothing invented.</div>
+        <div><b>4. You approve</b>You get a ready-to-post pack. Edits are included.</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="plans" id="plans">
+        <div class="plan"><h3>Free sample</h3><div class="price">$0</div><p class="muted">One recent episode, turned into a newsletter and a LinkedIn post. Keep it either way.</p><a class="btn" href="#start">Request a sample</a></div>
+        <div class="plan"><h3>Pilot</h3><div class="price" data-price="pilot">—</div><p class="muted">One episode, the full pack: newsletter, LinkedIn, X thread, clip plan, show notes and quotes.</p><button class="primary" data-plan="pilot">Reserve pilot</button></div>
+        <div class="plan featured"><h3>Monthly</h3><div class="price" data-price="monthly">—</div><p class="muted"><span data-eps>4</span> episodes a month, the full pack each time, plus a monthly check-in on what's working. Cancel anytime.</p><button class="primary" data-plan="monthly">Reserve monthly</button></div>
+      </div>
+      <div class="notice" id="testNote">Prototype test mode: "Reserve" buttons record your interest only. No card is requested and no payment is taken.</div>
+    </section>
+
+    <section id="start" class="card">
+      <h2>Request your free sample</h2>
+      <form id="leadForm" novalidate>
+        <div class="grid g2">
+          <div><label for="n">Your name *</label><input id="n" name="name" required maxlength="120" autocomplete="name"></div>
+          <div><label for="e">Email *</label><input id="e" name="email" type="email" required maxlength="200" autocomplete="email"></div>
+        </div>
+        <label for="s">Your show (link or name)</label><input id="s" name="show" maxlength="300">
+        <label for="i">I'm interested in</label>
+        <select id="i" name="interest"><option value="pilot">A free sample / pilot</option><option value="monthly">The monthly plan</option><option value="question">I have a question</option></select>
+        <label for="m">Anything I should know?</label><textarea id="m" name="message" maxlength="2000"></textarea>
+        <input name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+        <p class="small muted">Your details are used only to reply to this request.</p>
+        <button class="primary" type="submit">Send request</button>
+        <div id="formMsg" role="status" style="margin-top:10px"></div>
+      </form>
+    </section>
+    <footer>© <span id="yr"></span> <span id="biz">Repurpose Desk</span>. Independent service. Results depend on your content and audience; no specific growth is promised.</footer>
+  </div>
+  <script type="module" src="/offer.js"></script>
+</body>
+</html>
