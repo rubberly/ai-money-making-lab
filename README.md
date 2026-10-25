@@ -24,18 +24,23 @@ ai-money-making-lab/
     └── final_report.md
 ```
 
-## Live on Render (free plan)
+## Live on Render (free plan, all public)
 
-| App | Workspace (password) | Public offer page |
-|---|---|---|
-| Repurpose Desk | https://repurpose-desk-flux.onrender.com | https://repurpose-desk-flux.onrender.com/offer |
-| Site Makeover Kit | https://site-makeover-kit.onrender.com | https://site-makeover-kit.onrender.com/offer |
+| What | Link |
+|---|---|
+| **Research site** (Start here, report, chart, all documents) | https://ai-money-lab.onrender.com |
+| Scorecard chart | https://ai-money-lab.onrender.com/chart.html |
+| Repurpose Desk (workspace, with Start here course) | https://repurpose-desk-flux.onrender.com |
+| Repurpose Desk offer page | https://repurpose-desk-flux.onrender.com/offer |
+| Site Makeover Kit (workspace, with Start here course) | https://site-makeover-kit.onrender.com |
+| Site Makeover Kit offer page | https://site-makeover-kit.onrender.com/offer |
 
-- **Password:** Render dashboard → service → *Environment* → `APP_PASSWORD` (any username).
-- **Deploys:** pushing to `main` redeploys both apps (Blueprint `ai-money-making-lab`).
-- **Free plan limits:** apps sleep when idle (first load can take ~1 min) and **saved data is wiped on every restart or redeploy**. Download backups, or add a paid persistent disk, before relying on the hosted copies.
+- **No login:**  is "false" in , so anyone with a link can open the workspaces and see or edit what's saved there. Set it to "true" to require  + the  from each service's Environment tab.
+- **Deploys:** pushing to  redeploys everything (Blueprint ).
+- **Free plan limits:** the apps sleep when idle (the first load can take about a minute), and **saved data is wiped on every restart or redeploy**. Download backups.
 
-**HTML versions of every document:** open `html/index.html` in a browser. To rebuild after editing the Markdown: `npm install marked@12.0.2` in `tools/`, then `node tools/build-html.mjs . <folder-for-combined-page>`.
+**HTML site source:**  is built from the Markdown files and . To rebuild: up to date in 2s
+built 12 pages in html
 
 ## Run the prototypes (Node.js 20+, no install needed)
 
