@@ -25,6 +25,11 @@ const STATIC = {
   '/assets/app.js': ['app.js', 'text/javascript; charset=utf-8'],
   '/assets/offer.js': ['offer.js', 'text/javascript; charset=utf-8'],
   '/assets/styles.css': ['styles.css', 'text/css; charset=utf-8'],
+  '/assets/learn.js': ['learn.js', 'text/javascript; charset=utf-8'],
+  '/assets/lessons.js': ['lessons.js', 'text/javascript; charset=utf-8'],
+  '/assets/learn.css': ['learn.css', 'text/css; charset=utf-8'],
+  // Practice-round page; served as plain text so it is never rendered as a page here.
+  '/assets/sample-old-site.html': ['sample-old-site.html', 'text/plain; charset=utf-8'],
 };
 
 // Reachable without the workspace password: the customer-facing offer page and its form endpoints.
@@ -386,7 +391,7 @@ export function createApp({ dataDir = path.join(__dirname, 'data'), env = proces
   async function handle(req, res) {
     const { pathname } = new URL(req.url, 'http://localhost');
     if (pathname === '/healthz') return send(res, 200, { ok: true });
-    if (!isPublic(req.method, pathname) && !passwordOk(req, env.APP_PASSWORD, env.APP_USERNAME)) return askForPassword(res);
+    if (!isPublic(req.method, pathname) && !passwordOk(req, env.REQUIRE_LOGIN === 'false' ? '' : env.APP_PASSWORD, env.APP_USERNAME)) return askForPassword(res);
     if (req.method === 'GET' && STATIC[pathname]) {
       const [file, type] = STATIC[pathname];
       const body = fs.readFileSync(path.join(PUBLIC, file));

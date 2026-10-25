@@ -425,7 +425,7 @@ export async function createApp({ dataDir = process.env.DATA_DIR || join(ROOT, '
     const u = new URL(req.url, 'http://localhost');
     try {
       if (u.pathname === '/healthz') return sendJson(res, 200, { ok: true });
-      if (!isPublic(u.pathname) && !passwordOk(req, env.APP_PASSWORD, env.APP_USERNAME)) return askForPassword(res);
+      if (!isPublic(u.pathname) && !passwordOk(req, env.REQUIRE_LOGIN === 'false' ? '' : env.APP_PASSWORD, env.APP_USERNAME)) return askForPassword(res);
       if (!u.pathname.startsWith('/api/')) {
         if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'Method not allowed');
         return await serveStatic(u.pathname, res);

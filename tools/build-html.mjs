@@ -15,6 +15,7 @@ const LIVE = {
 };
 
 const DOCS = [
+  { token: 'start', file: 'guides/start_here.md', label: '★ Start here', blurb: 'What to do first, in order, and which app to use.' },
   { token: 'report', file: 'reports/final_report.md', label: 'Final report', blurb: 'Findings, rankings, prototypes and the first-$100 plan in one place.' },
   { token: 'video', file: 'research/video_notes.md', label: 'Video notes', blurb: 'All seven methods with timestamps, split into what was said and what is interpretation.' },
   { token: 'methods', file: 'research/seven_methods.md', label: 'The seven methods', blurb: 'Deep dive per method, including whether you need an app.' },

@@ -1,0 +1,58 @@
+/* Start-here course. App tokens are mapped to --l-* so the same rules work in both apps. */
+:root { --l-panel: var(--panel); --l-line: var(--line); --l-ink: var(--text); --l-muted: var(--muted); --l-accent: var(--accent); --l-accent-ink: var(--accent-ink); --l-soft: var(--accent-soft); --l-good: var(--ok); --l-good-soft: var(--ok-soft); --l-bad: var(--bad); --l-bad-soft: var(--bad-soft); --l-bg: var(--bg); }
+
+.l-page { display: flex; flex-direction: column; gap: 18px; max-width: 820px; }
+.l-h1 { font-size: 24px; margin: 0 0 6px; }
+.l-intro { color: var(--l-muted); margin: 0 0 12px; max-width: 65ch; }
+.l-progress { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.l-bar { flex: 1 1 200px; height: 8px; background: var(--l-line); border-radius: 999px; overflow: hidden; }
+.l-fill { display: block; height: 100%; background: var(--l-good); border-radius: 999px; transition: width .3s ease; }
+.l-count { font-size: 13px; color: var(--l-muted); font-variant-numeric: tabular-nums; }
+.l-list { display: flex; flex-direction: column; gap: 10px; }
+.l-lesson { background: var(--l-panel); border: 1px solid var(--l-line); border-radius: 10px; }
+.l-lesson.is-next { border-color: var(--l-accent); }
+.l-summary { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; list-style: none; }
+.l-summary::-webkit-details-marker { display: none; }
+.l-summary:focus-visible { outline: 2px solid var(--l-accent); outline-offset: 2px; border-radius: 10px; }
+.l-num { flex: 0 0 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 13px; background: var(--l-soft); color: var(--l-accent); }
+.is-done .l-num { background: var(--l-good-soft); color: var(--l-good); }
+.l-title { flex: 1; font-weight: 600; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.is-done .l-title { color: var(--l-muted); }
+.l-next { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--l-accent); background: var(--l-soft); padding: 2px 8px; border-radius: 999px; }
+.l-time { font-size: 12px; color: var(--l-muted); white-space: nowrap; }
+.l-body { padding: 0 16px 16px 56px; display: flex; flex-direction: column; gap: 10px; }
+.l-why { margin: 0; max-width: 65ch; }
+.l-h { margin: 6px 0 0; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--l-muted); }
+.l-steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; max-width: 65ch; }
+.l-compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 10px; }
+.l-good, .l-bad { border-radius: 8px; padding: 10px 12px; font-size: 14px; }
+.l-good { background: var(--l-good-soft); }
+.l-bad { background: var(--l-bad-soft); }
+.l-good strong { color: var(--l-good); }
+.l-bad strong { color: var(--l-bad); }
+.l-good p, .l-bad p { margin: 4px 0 0; white-space: pre-line; color: var(--l-ink); }
+.l-note { margin: 0; padding: 10px 12px; border-left: 3px solid var(--l-accent); background: var(--l-soft); border-radius: 0 8px 8px 0; font-size: 14px; color: var(--l-ink); }
+.l-check { border: 1px dashed var(--l-line); border-radius: 8px; padding: 10px 12px; }
+.l-check p { margin: 4px 0; }
+.l-answer summary { cursor: pointer; color: var(--l-accent); font-weight: 600; font-size: 14px; }
+.l-answer p { background: var(--l-bg); padding: 8px 10px; border-radius: 6px; }
+.l-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.l-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--l-accent); background: var(--l-accent); color: var(--l-accent-ink); font: inherit; font-weight: 600; cursor: pointer; }
+.l-btn-quiet { background: transparent; color: var(--l-accent); border-color: var(--l-line); }
+.l-btn:disabled { opacity: .6; cursor: progress; }
+.l-done { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; margin-top: 4px; width: fit-content; }
+.l-done input { width: 18px; height: 18px; margin: 0; accent-color: var(--l-good); }
+.l-h2 { font-size: 17px; margin: 8px 0 8px; }
+.l-dl { display: grid; grid-template-columns: max-content 1fr; gap: 8px 16px; margin: 0; background: var(--l-panel); border: 1px solid var(--l-line); border-radius: 10px; padding: 14px 16px; }
+.l-dl dt { font-weight: 600; }
+.l-dl dd { margin: 0; color: var(--l-muted); }
+.l-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--l-muted); }
+.l-tip { background: var(--l-soft); border-radius: 10px; padding: 10px 14px; margin: 0 0 16px; font-size: 14px; color: var(--l-ink); }
+.l-tip summary { cursor: pointer; font-weight: 600; color: var(--l-accent); }
+.l-tip ul { margin: 8px 0 6px; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+.l-tiplink { font-size: 13px; font-weight: 600; }
+@media (max-width: 600px) {
+  .l-body { padding-left: 16px; }
+  .l-dl { grid-template-columns: 1fr; gap: 2px; }
+  .l-dl dd { margin-bottom: 8px; }
+}

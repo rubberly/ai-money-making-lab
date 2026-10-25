@@ -43,3 +43,13 @@ test('when APP_USERNAME is set, the username must match too', async () => {
   assert.equal(passwordOk(req('anyone', 'pw'), 'pw', ''), true, 'no APP_USERNAME: any username');
   assert.equal(passwordOk({ headers: {} }, '', 'lucas'), true, 'no APP_PASSWORD: gate off');
 });
+
+test('REQUIRE_LOGIN=false opens the workspace even when a password exists', async () => {
+  const d = await mkdtemp(join(tmpdir(), 'rdesk-open-'));
+  const { server: s } = await createApp({ dataDir: d, env: { APP_PASSWORD: 'x', APP_USERNAME: 'lucas', REQUIRE_LOGIN: 'false' } });
+  await new Promise((r) => s.listen(0, '127.0.0.1', r));
+  const b = `http://127.0.0.1:${s.address().port}`;
+  for (const p of ['/', '/api/clients', '/learn.js', '/lessons.js', '/learn.css']) assert.equal((await fetch(b + p)).status, 200, p);
+  await new Promise((r) => s.close(r));
+  await rm(d, { recursive: true, force: true });
+});

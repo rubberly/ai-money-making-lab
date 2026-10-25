@@ -1,7 +1,45 @@
 // Repurpose Desk front-end (vanilla JS, hash routing). All user content is escaped.
+import { createLearn } from './learn.js';
+import { TITLE, INTRO, LESSONS, GLOSSARY, TIPS } from './lessons.js';
 
 const app = document.getElementById('app');
 let META = null;
+
+const learn = createLearn({
+  storageKey: 'repurposeDesk.learn', title: TITLE, intro: INTRO, lessons: LESSONS, glossary: GLOSSARY, tips: TIPS,
+  onAction: (action, btn) => {
+    if (action === 'start') location.hash = '#/start';
+    else if (action === 'practice') busy(btn, startPractice);
+    else if (action.startsWith('url:')) window.open(action.slice(4), '_blank', 'noopener');
+    else location.hash = action;
+  },
+});
+
+// Practice round: a SAMPLE client + SAMPLE episode, created once and reused.
+async function startPractice() {
+  const clients = await api('/api/clients');
+  let client = clients.find((c) => c.name === 'Dana (SAMPLE)');
+  if (!client) {
+    client = await api('/api/clients', { method: 'POST', body: {
+      name: 'Dana (SAMPLE)', show: 'Flour and Profit (SAMPLE podcast)', status: 'pilot', monthlyRate: '0',
+      platforms: 'newsletter, LinkedIn, X',
+      voice: { tone: 'Warm, plain-spoken, practical. Short sentences. UK spelling.', audience: 'Home bakers thinking of selling at markets', cta: 'Send this to one friend who bakes', bannedWords: 'hustle, crush it' },
+    } });
+  }
+  const jobs = await api('/api/jobs');
+  let job = jobs.find((j) => j.clientId === client.id);
+  if (!job) {
+    const transcript = await fetch('/sample-transcript.txt').then((r) => r.text());
+    job = await api('/api/jobs', { method: 'POST', body: { clientId: client.id, title: 'SAMPLE - Pricing your first market stall', transcript } });
+  }
+  toast('Practice episode ready. Click “Generate all 6”.');
+  location.hash = `#/jobs/${job.id}`;
+}
+
+async function viewStart() {
+  setNav('start');
+  learn.render(app);
+}
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const money = (n) => (n == null ? '—' : `$${Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 })}`);
@@ -57,8 +95,12 @@ async function viewDashboard() {
   if (f.stages.identified > 0) next.push(`${f.stages.identified} prospect(s) identified but not contacted - make a free sample for the best 3.`);
   if (f.stages.replied + f.stages.call_booked > 0) next.push('You have replies - offer the paid pilot at ' + money(s.pilotPrice) + '.');
   if (!next.length) next.push('Keep the loop going: 5 new prospects, 1 free sample per day.');
+  const lp = learn.progress();
+  const course = lp.done < lp.total
+    ? `<div class="card spread"><div><h2 style="margin:0">New here? Start with the course</h2><p class="small muted" style="margin:4px 0 0">${lp.done} of ${lp.total} lessons done. Each lesson takes you step by step to your first paid client.</p></div><a class="btn primary" href="#/start">${lp.done ? 'Continue the course' : 'Start here'}</a></div>`
+    : '';
   app.innerHTML = `
-    <h1>Dashboard</h1><p class="sub">${esc(d.month)} · interest is not revenue: the right column is what counts.</p>
+    <h1>Dashboard</h1><p class="sub">${esc(d.month)} · interest is not revenue: the right column is what counts.</p>${course}
     <div class="grid g4 stats">
       <div class="stat"><div class="v">${money(d.revenueMonth)}</div><div class="l">Revenue this month (logged)</div></div>
       <div class="stat"><div class="v">${money(d.mrr)}</div><div class="l">Recurring / month (active clients)</div></div>
@@ -479,14 +521,18 @@ async function router() {
       META = await api('/api/meta');
       document.getElementById('provider').textContent = META.provider === 'none' ? 'AI: not configured (template drafts)' : `AI: ${META.providerLabel} · ${META.model}`;
     }
-    if (!parts.length) await viewDashboard();
-    else if (parts[0] === 'clients') await viewClients(parts[1]);
-    else if (parts[0] === 'jobs' && parts[1]) await viewJob(parts[1]);
-    else if (parts[0] === 'jobs') await viewJobs();
-    else if (parts[0] === 'prospects') await viewProspects();
-    else if (parts[0] === 'leads') await viewLeads();
-    else if (parts[0] === 'money') await viewMoney();
+    let tipKey = null;
+    if (!parts.length) { await viewDashboard(); tipKey = 'dashboard'; }
+    else if (parts[0] === 'start') await viewStart();
+    else if (parts[0] === 'clients') { await viewClients(parts[1]); tipKey = 'clients'; }
+    else if (parts[0] === 'jobs' && parts[1]) { await viewJob(parts[1]); tipKey = 'job'; }
+    else if (parts[0] === 'jobs') { await viewJobs(); tipKey = 'jobs'; }
+    else if (parts[0] === 'prospects') { await viewProspects(); tipKey = 'prospects'; }
+    else if (parts[0] === 'leads') { await viewLeads(); tipKey = 'leads'; }
+    else if (parts[0] === 'money') { await viewMoney(); tipKey = 'money'; }
     else app.innerHTML = '<div class="card empty">Page not found. <a href="#/">Dashboard</a></div>';
+    if (tipKey) learn.tip(app, tipKey, app.querySelector(':scope > .spread') || app.querySelector(':scope > .sub'));
+    window.scrollTo(0, 0);
   } catch (e) {
     app.innerHTML = `<div class="card"><h2>Something went wrong</h2><p>${esc(e.message)}</p><p class="small muted">Is the server still running? Check the terminal.</p></div>`;
   }

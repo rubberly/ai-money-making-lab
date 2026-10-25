@@ -1,4 +1,6 @@
 // Site Makeover Kit: single-page UI. All user/remote content is inserted via textContent (no innerHTML).
+import { createLearn } from './learn.js';
+import { TITLE, INTRO, LESSONS, GLOSSARY, TIPS } from './lessons.js';
 
 const STAGE_LABELS = {
   found: 'Found', audited: 'Audited', sample_built: 'Sample built', emailed: 'Emailed (by you)',
@@ -322,6 +324,11 @@ async function viewAudit(params) {
     if (p?.website) form.elements.url.value = p.website;
   });
   if (params.get('prospect')) { sel.value = params.get('prospect'); sel.dispatchEvent(new Event('change')); }
+  if (params.get('show')) {
+    api(`/api/audits/${encodeURIComponent(params.get('show'))}`)
+      .then(full => { state.audit = full; result.replaceChildren(renderAuditResult(full)); })
+      .catch(err => toast(err.message, true));
+  }
 
   async function run() {
     const data = formData(form);
@@ -651,8 +658,36 @@ async function viewSettings() {
   );
 }
 
+// ---------- start here (course) ----------
+const learn = createLearn({
+  storageKey: 'siteMakeoverKit.learn', title: TITLE, intro: INTRO, lessons: LESSONS, glossary: GLOSSARY, tips: TIPS,
+  onAction: (action, btn) => {
+    if (action === 'start') go('start');
+    else if (action === 'practice') withBusy(btn, 'Setting up…', startPractice).catch(err => toast(err.message, true));
+    else if (action.startsWith('url:')) window.open(action.slice(4), '_blank', 'noopener');
+    else location.hash = action;
+  },
+});
+
+// Practice round: a SAMPLE prospect plus an audit of a deliberately outdated SAMPLE page.
+async function startPractice() {
+  await loadProspects();
+  let p = state.prospects.find(x => x.name === "Bob's Gardens (SAMPLE)");
+  if (!p) {
+    p = await api('/api/prospects', { method: 'POST', body: { name: "Bob's Gardens (SAMPLE)", trade: 'Gardener', town: 'Maidstone', source: 'Practice round (fictional business)' } });
+  }
+  const html = await fetch('/assets/sample-old-site.html').then(r => r.text());
+  const a = await api('/api/audit', { method: 'POST', body: { prospectId: p.id, html } });
+  toast('Practice audit done. Read “Fix these first”, then build the sample site.');
+  go('audit', { prospect: p.id, show: a.id });
+}
+
+async function viewStart() {
+  learn.render(main);
+}
+
 // ---------- router ----------
-const VIEWS = { pipeline: viewPipeline, audit: viewAudit, build: viewBuild, outreach: viewOutreach, pricing: viewPricing, leads: viewLeads, settings: viewSettings };
+const VIEWS = { start: viewStart, pipeline: viewPipeline, audit: viewAudit, build: viewBuild, outreach: viewOutreach, pricing: viewPricing, leads: viewLeads, settings: viewSettings };
 
 async function render() {
   const [name, query] = (location.hash.slice(1) || 'pipeline').split('?');
@@ -661,6 +696,7 @@ async function render() {
   main.replaceChildren(h('div', { class: 'empty' }, h('span', { class: 'spinner' }), ' Loading…'));
   try {
     await VIEWS[view](new URLSearchParams(query || ''));
+    if (view !== 'start') learn.tip(main, view, main.querySelector(':scope > .page-head'));
   } catch (err) {
     main.replaceChildren(h('div', { class: 'notice bad' }, h('strong', {}, 'Could not load this page. '), err.message));
   }

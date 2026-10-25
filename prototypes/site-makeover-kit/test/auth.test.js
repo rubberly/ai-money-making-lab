@@ -48,3 +48,20 @@ test('when APP_USERNAME is set, the username must match too', async () => {
   assert.equal(passwordOk(req('anyone', 'pw'), 'pw', ''), true, 'no APP_USERNAME: any username');
   assert.equal(passwordOk({ headers: {} }, '', 'lucas'), true, 'no APP_PASSWORD: gate off');
 });
+
+test('REQUIRE_LOGIN=false opens the workspace; course files and practice page are served', async () => {
+  const d = fs.mkdtempSync(path.join(os.tmpdir(), 'smk-open-'));
+  const s = createApp({ dataDir: d, env: { APP_PASSWORD: 'x', APP_USERNAME: 'lucas', REQUIRE_LOGIN: 'false' } });
+  await new Promise(r => s.listen(0, '127.0.0.1', r));
+  const b = `http://127.0.0.1:${s.address().port}`;
+  for (const p of ['/', '/api/prospects', '/assets/learn.js', '/assets/lessons.js', '/assets/learn.css']) assert.equal((await fetch(b + p)).status, 200, p);
+  const sample = await fetch(b + '/assets/sample-old-site.html');
+  assert.match(sample.headers.get('content-type'), /text\/plain/);
+  const html = await sample.text();
+  const audit = await fetch(b + '/api/audit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ html }) });
+  assert.equal(audit.status, 201 === audit.status ? 201 : 200);
+  const a = await audit.json();
+  assert.ok(a.score < 50, `practice page should score low, got ${a.score}`);
+  await new Promise(r => s.close(r));
+  fs.rmSync(d, { recursive: true, force: true });
+});
