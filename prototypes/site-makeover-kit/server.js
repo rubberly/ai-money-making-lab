@@ -386,7 +386,7 @@ export function createApp({ dataDir = path.join(__dirname, 'data'), env = proces
   async function handle(req, res) {
     const { pathname } = new URL(req.url, 'http://localhost');
     if (pathname === '/healthz') return send(res, 200, { ok: true });
-    if (!isPublic(req.method, pathname) && !passwordOk(req, env.APP_PASSWORD)) return askForPassword(res);
+    if (!isPublic(req.method, pathname) && !passwordOk(req, env.APP_PASSWORD, env.APP_USERNAME)) return askForPassword(res);
     if (req.method === 'GET' && STATIC[pathname]) {
       const [file, type] = STATIC[pathname];
       const body = fs.readFileSync(path.join(PUBLIC, file));

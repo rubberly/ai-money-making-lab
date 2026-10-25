@@ -38,3 +38,13 @@ test('offer page, its assets, lead form, test order and health check stay public
   const lead = await fetch(base + '/api/leads', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({}) });
   assert.notEqual(lead.status, 401, 'lead form reaches validation, not the password gate');
 });
+
+test('when APP_USERNAME is set, the username must match too', async () => {
+  const { passwordOk } = await import('../lib/auth.js');
+  const req = (u, p) => ({ headers: { authorization: 'Basic ' + Buffer.from(`${u}:${p}`).toString('base64') } });
+  assert.equal(passwordOk(req('lucas', 'pw'), 'pw', 'lucas'), true);
+  assert.equal(passwordOk(req('someone', 'pw'), 'pw', 'lucas'), false);
+  assert.equal(passwordOk(req('lucas', 'nope'), 'pw', 'lucas'), false);
+  assert.equal(passwordOk(req('anyone', 'pw'), 'pw', ''), true, 'no APP_USERNAME: any username');
+  assert.equal(passwordOk({ headers: {} }, '', 'lucas'), true, 'no APP_PASSWORD: gate off');
+});
