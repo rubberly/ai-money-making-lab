@@ -1,3 +1,6 @@
 node_modules/
 data/
 .env
+
+# Lead lists and other private working files (never publish)
+private/
