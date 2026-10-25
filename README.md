@@ -24,6 +24,17 @@ ai-money-making-lab/
     └── final_report.md
 ```
 
+## Live on Render (free plan)
+
+| App | Workspace (password) | Public offer page |
+|---|---|---|
+| Repurpose Desk | https://repurpose-desk-flux.onrender.com | https://repurpose-desk-flux.onrender.com/offer |
+| Site Makeover Kit | https://site-makeover-kit.onrender.com | https://site-makeover-kit.onrender.com/offer |
+
+- **Password:** Render dashboard → service → *Environment* → `APP_PASSWORD` (any username).
+- **Deploys:** pushing to `main` redeploys both apps (Blueprint `ai-money-making-lab`).
+- **Free plan limits:** apps sleep when idle (first load can take ~1 min) and **saved data is wiped on every restart or redeploy**. Download backups, or add a paid persistent disk, before relying on the hosted copies.
+
 ## Run the prototypes (Node.js 20+, no install needed)
 
 ```bash
