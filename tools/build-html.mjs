@@ -1,16 +1,14 @@
-// Builds HTML versions of the lab's documents:
-//  - <lab>/html/*.html  one standalone page per document + index.html hub
-//  - <out>/lab-report.html  one combined page (published as an artifact)
+// Builds the lab's public HTML site: <lab>/html/*.html, one page per document,
+// a scorecard chart page and an index.html hub. Hosted as a Render static site.
+// Usage: node tools/build-html.mjs <lab-folder>   (needs: npm install marked@12.0.2)
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { marked } from 'marked';
 
 const LAB = process.argv[2];
-const OUT = process.argv[3];
 const LIVE = {
   repurpose: 'https://repurpose-desk-flux.onrender.com',
   kit: 'https://site-makeover-kit.onrender.com',
-  chart: 'https://claude.ai/artifact/CdEKPZyz5YMNcks6iPKq8t',
   repo: 'https://github.com/rubberly/ai-money-making-lab',
 };
 
@@ -20,6 +18,7 @@ const DOCS = [
   { token: 'video', file: 'research/video_notes.md', label: 'Video notes', blurb: 'All seven methods with timestamps, split into what was said and what is interpretation.' },
   { token: 'methods', file: 'research/seven_methods.md', label: 'The seven methods', blurb: 'Deep dive per method, including whether you need an app.' },
   { token: 'scorecard', file: 'research/feasibility_scorecard.md', label: 'Feasibility scorecard', blurb: 'Weighted scores with the reason behind every number.' },
+  { token: 'chart', file: 'research/scorecard.csv', kind: 'chart', label: 'Scorecard chart', blurb: 'All seven methods ranked by weighted score, with every category score.' },
   { token: 'picks', file: 'research/business_recommendations.md', label: 'Recommendations', blurb: 'Why repurposing and website makeovers were built, and what to test.' },
   { token: 'plans', file: 'validation/seven_day_plans.md', label: '7-day plans', blurb: 'Day-by-day validation plans with continue, change or stop rules.' },
   { token: 'outreach', file: 'validation/outreach_templates.md', label: 'Outreach templates', blurb: 'First messages, follow-ups, pilot offer and research questions.' },
@@ -40,8 +39,80 @@ ${body.map((r) => `<tr>${r.map((c, i) => `<td${/^target|actual/.test(head[i]) ? 
 </tbody></table></div>`;
 }
 
+// ---- scorecard chart (drawn at build time as SVG; a small script adds hover details) ----
+const WEIGHTS = { cost: 0.15, beginner: 0.15, speed: 0.15, demand: 0.15, profit: 0.15, build: 0.10, automate: 0.10, risk: 0.05 };
+const COLS = [['cost', 'Low cost', '15%'], ['beginner', 'Beginner', '15%'], ['speed', 'Speed', '15%'], ['demand', 'Demand', '15%'], ['profit', 'Profit / effort', '15%'], ['build', 'Easy to build', '10%'], ['automate', 'Automatable', '10%'], ['risk', 'Low risk', '5%']];
+
+function parseCsv(text) {
+  const [head, ...lines] = text.trim().split(/\r?\n/).map((l) => l.split(','));
+  return lines.map((cells) => Object.fromEntries(head.map((h, i) => [h, (cells[i] ?? '').trim()])));
+}
+
+function chartPage(raw) {
+  const rows = parseCsv(raw).map((r) => {
+    const keys = Object.keys(WEIGHTS);
+    const scored = keys.every((k) => r[k] !== '');
+    return { ...r, total: scored ? Math.round(keys.reduce((s, k) => s + Number(r[k]) * WEIGHTS[k], 0) * 100) / 10 : null };
+  }).sort((a, b) => (a.total == null) - (b.total == null) || (b.total ?? 0) - (a.total ?? 0));
+  const [first, second] = rows.filter((r) => r.total != null);
+
+  // HTML bars (not a scaled SVG) so the text stays readable at phone width.
+  const TICKS = [0, 25, 50, 75, 100];
+  const grid = `<div class="gridlayer" aria-hidden="true">${TICKS.map((t) => `<span class="${t === 0 ? 'gl axis' : 'gl'}" style="left:${t}%"></span>`).join('')}</div>`;
+  const axis = `<div class="ticks" aria-hidden="true">${TICKS.map((t) => `<span style="left:${t}%">${t}</span>`).join('')}</div>`;
+  const bars = rows.map((r) => {
+    const tipText = [r.method, r.total == null ? 'Not scored' : `Score: ${r.total} / 100`, `Startup cost: ${r.startup_cost}`, `First customer: ${r.first_customer}`, r.prototype ? `Prototype: ${r.prototype}` : ''].filter(Boolean).join('|');
+    const mark = r.total == null
+      ? `<div class="note">Not scored: never revealed in the video</div>`
+      : `<div class="track"><span class="${r.prototype ? 'bar built' : 'bar'}" style="width:${r.total}%"></span><span class="val" style="left:${r.total}%">${r.total}</span></div>`;
+    return `<div class="row" tabindex="0" role="listitem" data-tip="${esc(tipText)}" aria-label="${esc(r.method)}: ${r.total == null ? 'not scored' : `${r.total} out of 100`}"><div class="label">${esc(r.method)}</div>${mark}</div>`;
+  }).join('');
+
+  const breakdown = `<div class="tw"><table><thead><tr><th>Method</th>${COLS.map(([, l, w]) => `<th class="num">${l}<br><small>${w}</small></th>`).join('')}<th class="num">Total<br><small>/100</small></th></tr></thead><tbody>
+${rows.map((r) => `<tr><td>${esc(r.method)}</td>${COLS.map(([k]) => `<td class="num">${esc(r[k] || '—')}</td>`).join('')}<td class="num"><b>${r.total ?? '—'}</b></td></tr>`).join('\n')}
+</tbody></table></div>`;
+  const costs = `<div class="tw"><table><thead><tr><th>Method</th><th>Video time</th><th>Video's tier</th><th>Startup cost</th><th>First customer</th><th>Prototype</th></tr></thead><tbody>
+${rows.map((r) => `<tr><td>${esc(r.method)}</td><td>${esc(r.video_time)}</td><td>${esc(r.their_tier)}</td><td>${esc(r.startup_cost)}</td><td>${esc(r.first_customer)}</td><td>${esc(r.prototype || '—')}</td></tr>`).join('\n')}
+</tbody></table></div>`;
+
+  return `<h1>Scorecard chart</h1>
+<p class="lede"><b>${esc(first.method)}</b> scores highest at <b>${first.total}</b> out of 100, ${Math.round((first.total - second.total) * 10) / 10} points ahead of <b>${esc(second.method)}</b>. The video never reveals method 7, so it has no score.</p>
+<h2>Weighted score by method</h2>
+<p>Out of 100. Higher is better for a beginner. Hover or tap a row for startup cost and time to first customer.</p>
+<div class="legend"><span><i class="sw built"></i>Prototype built</span><span><i class="sw"></i>Not built</span></div>
+<figure class="chart" id="chart"><div class="plot">${grid}<div class="rows" role="list" aria-label="Weighted score by method, out of 100">${bars}</div></div>${axis}<div class="tip" id="tip" hidden></div></figure>
+<h2>Score breakdown</h2>
+<p>Each category is scored 1–10, where higher is more favourable (cheaper, faster, less risky). The weight is under each heading. Total = each score × its weight, added up, × 10.</p>
+${breakdown}
+<h2>Cost and timing</h2>
+<p>Estimates from the research, not promises.</p>
+${costs}
+<script>
+(function () {
+  var fig = document.getElementById('chart'), tip = document.getElementById('tip');
+  function show(row, cx, cy) {
+    var parts = row.getAttribute('data-tip').split('|');
+    tip.replaceChildren();
+    parts.forEach(function (p, i) { var d = document.createElement('div'); if (i === 0) d.className = 't'; d.textContent = p; tip.appendChild(d); });
+    tip.hidden = false;
+    var b = fig.getBoundingClientRect(), left = cx - b.left + 14, topPx = cy - b.top + 14;
+    if (left + tip.offsetWidth > b.width) left = Math.max(0, cx - b.left - tip.offsetWidth - 14);
+    if (topPx + tip.offsetHeight > b.height) topPx = Math.max(0, cy - b.top - tip.offsetHeight - 14);
+    tip.style.left = left + 'px'; tip.style.top = topPx + 'px';
+  }
+  fig.querySelectorAll('.row').forEach(function (row) {
+    row.addEventListener('mousemove', function (e) { show(row, e.clientX, e.clientY); });
+    row.addEventListener('mouseleave', function () { tip.hidden = true; });
+    row.addEventListener('focus', function () { var r = row.getBoundingClientRect(); show(row, r.left + 40, r.top + 10); });
+    row.addEventListener('blur', function () { tip.hidden = true; });
+  });
+})();
+</script>`;
+}
+
 function render(doc) {
   const raw = readFileSync(join(LAB, doc.file), 'utf8');
+  if (doc.kind === 'chart') return chartPage(raw);
   if (doc.file.endsWith('.csv')) return csvToTable(raw);
   let html = marked.parse(raw, { gfm: true });
   html = html.replace(/<table>/g, '<div class="tw"><table>').replace(/<\/table>/g, '</table></div>');
@@ -69,6 +140,7 @@ const CSS = `
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.6 var(--body); }
 a { color: var(--accent); text-underline-offset: 2px; }
+.doc a { overflow-wrap: anywhere; }
 a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
 .shell { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 3rem; max-width: 76rem; margin: 0 auto;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 2.5rem 4rem; }
@@ -112,19 +184,48 @@ main { min-width: 0; }
 .lede { font-size: 1.08rem; color: var(--muted); max-width: 62ch; }
 .foot { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: .82rem; color: var(--muted); }
 @media (max-width: 860px) {
-  .shell { grid-template-columns: 1fr; gap: 1.5rem; padding-block: 1.25rem 3rem; }
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; padding-block: 1.25rem 3rem; }
+  .rail, main { min-width: 0; }
   .rail { position: static; }
   .toc { flex-direction: row; overflow-x: auto; gap: 4px; padding-bottom: 4px; }
   .toc a, .toc button { white-space: nowrap; }
   .live { flex-direction: row; flex-wrap: wrap; gap: .4rem 1rem; }
   .live b { width: 100%; }
 }
+/* chart page */
+:root { --bar: #b7bfcc; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bar: #4a5366; } }
+:root[data-theme="dark"] { --bar: #4a5366; }
+.legend { display: flex; gap: 1.2rem; flex-wrap: wrap; font-size: .85rem; color: var(--muted); margin: .5rem 0; }
+.legend span { display: inline-flex; align-items: center; gap: .4rem; }
+.sw { width: 10px; height: 10px; border-radius: 2px; display: inline-block; background: var(--bar); }
+.sw.built { background: var(--accent); }
+.chart { position: relative; margin: .5rem 0 1.5rem; --gutter: 2.75rem; }
+.chart .plot { position: relative; }
+.chart .gridlayer { position: absolute; inset: 0 var(--gutter) 0 0; pointer-events: none; }
+.chart .gl { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--rule); }
+.chart .gl.axis { background: var(--muted); }
+.chart .rows { position: relative; display: flex; flex-direction: column; }
+.chart .row { padding: .35rem 0; border-radius: 6px; cursor: default; }
+.chart .row:hover, .chart .row:focus-visible { background: color-mix(in srgb, var(--panel) 70%, transparent); outline: none; }
+.chart .label { font-size: .88rem; font-weight: 500; color: var(--ink); margin-bottom: .25rem; padding-left: .35rem; }
+.chart .track { position: relative; height: 16px; margin-right: var(--gutter); }
+.chart .bar { position: absolute; left: 0; top: 0; height: 100%; min-width: 2px; border-radius: 0 4px 4px 0; background: var(--bar); }
+.chart .bar.built { background: var(--accent); }
+.chart .val { position: absolute; top: 50%; transform: translateY(-50%); margin-left: 6px; font-size: .82rem; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.chart .note { font-size: .82rem; color: var(--muted); padding-left: .35rem; }
+.chart .ticks { position: relative; height: 1.4rem; margin-right: var(--gutter); font-size: .75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.chart .ticks span { position: absolute; top: .3rem; transform: translateX(-50%); }
+.chart .ticks span:first-child { transform: none; }
+.chart .ticks span:last-child { transform: translateX(-100%); }
+.tip { position: absolute; pointer-events: none; background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.12); padding: .45rem .65rem; font-size: .82rem; min-width: 11rem; }
+.tip .t { color: var(--muted); font-weight: 600; margin-bottom: 2px; }
+.doc th small { font-weight: 400; }
 `;
 
 const liveLinks = `<div class="live"><b>Live apps</b>
 <a href="${LIVE.repurpose}" target="_blank" rel="noopener noreferrer">Repurpose Desk</a>
 <a href="${LIVE.kit}" target="_blank" rel="noopener noreferrer">Site Makeover Kit</a>
-<a href="${LIVE.chart}" target="_blank" rel="noopener noreferrer">Scorecard chart</a>
 <a href="${LIVE.repo}" target="_blank" rel="noopener noreferrer">GitHub repo</a></div>`;
 
 function page({ title, nav, body }) {
@@ -145,11 +246,11 @@ const hubBody = `<article class="doc"><h1>AI Money Lab</h1>
 <p class="lede">Research on Mark Tilbury's "7 Proven Ways to Make Money With AI (No Experience)", a weighted ranking of all seven methods, and two working apps for the strongest ones.</p>
 <div class="cards">${DOCS.map((d) => `<a class="card" href="${d.token}.html"><strong>${esc(d.label)}</strong><span>${esc(d.blurb)}</span></a>`).join('')}</div>
 <h2>Live apps</h2>
-<div class="tw"><table><thead><tr><th>App</th><th>Workspace (password)</th><th>Public offer page</th></tr></thead><tbody>
+<div class="tw"><table><thead><tr><th>App</th><th>Workspace</th><th>Public offer page</th></tr></thead><tbody>
 <tr><td>Repurpose Desk</td><td><a href="${LIVE.repurpose}" target="_blank" rel="noopener noreferrer">${LIVE.repurpose.replace('https://', '')}</a></td><td><a href="${LIVE.repurpose}/offer" target="_blank" rel="noopener noreferrer">/offer</a></td></tr>
 <tr><td>Site Makeover Kit</td><td><a href="${LIVE.kit}" target="_blank" rel="noopener noreferrer">${LIVE.kit.replace('https://', '')}</a></td><td><a href="${LIVE.kit}/offer" target="_blank" rel="noopener noreferrer">/offer</a></td></tr>
 </tbody></table></div>
-<p>The password for each workspace is in Render, under the service's Environment tab (<code>APP_PASSWORD</code>). Free hosting sleeps when idle and resets saved data on restart.</p>
+<p>Both workspaces are public: anyone with the link can open them. Free hosting sleeps when idle (the first load can take a minute) and resets saved data on restart, so download backups.</p>
 <p class="foot">Generated from the Markdown files in this folder on ${new Date().toISOString().slice(0, 10)}. Edit the Markdown, then rebuild.</p></article>`;
 
 writeFileSync(join(dir, 'index.html'), page({ title: 'AI Money Lab', nav: navFor('index'), body: hubBody }));
@@ -157,29 +258,4 @@ for (const d of DOCS) {
   writeFileSync(join(dir, `${d.token}.html`), page({ title: `${d.label} · AI Money Lab`, nav: navFor(d.token), body: `<article class="doc">${render(d)}<p class="foot">Source: <code>${esc(d.file)}</code></p></article>` }));
 }
 
-// ---- combined single page (artifact) ----
-const combinedNav = `<nav class="toc" aria-label="Documents">${DOCS.map((d, i) => `<button type="button" data-go="${d.token}"${i === 0 ? ' aria-current="page"' : ''}>${esc(d.label)}</button>`).join('')}</nav>`;
-const sections = DOCS.map((d, i) => `<section class="doc" id="${d.token}"${i === 0 ? '' : ' hidden'}>${render(d)}</section>`).join('\n');
-const combined = `<title>AI Money Lab</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-${FONTS}<style>${CSS}</style>
-<div class="shell"><aside class="rail"><div class="brand">AI Money Lab<small>Research and prototypes</small></div>${combinedNav}${liveLinks}</aside>
-<main>${sections}</main></div>
-<script>
-(function () {
-  var buttons = document.querySelectorAll('[data-go]');
-  function show(token, scroll) {
-    var target = document.getElementById(token);
-    if (!target || target.tagName !== 'SECTION') return;
-    document.querySelectorAll('main > section').forEach(function (s) { s.hidden = s !== target; });
-    buttons.forEach(function (b) { if (b.dataset.go === token) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
-    if (scroll) window.scrollTo(0, 0);
-  }
-  buttons.forEach(function (b) { b.addEventListener('click', function () { show(b.dataset.go, true); }); });
-  var start = location.hash.slice(1);
-  if (start) show(start, false);
-})();
-</script>
-`;
-writeFileSync(join(OUT, 'lab-report.html'), combined);
-console.log('built', DOCS.length + 1, 'pages in', dir, 'and lab-report.html');
+console.log('built', DOCS.length + 1, 'pages in', dir);

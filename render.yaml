@@ -43,3 +43,16 @@ services:
         value: lucas
       - key: APP_PASSWORD
         generateValue: true
+
+  # Public HTML site: the research, the Start here guide and the scorecard chart (html/).
+  - type: web
+    name: ai-money-lab
+    runtime: static
+    staticPublishPath: ./html
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scorecard chart · AI Money Lab</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"><style>
+/* Layout: a fixed contents rail beside one reading column; rail becomes a scrolling strip on phones. */
+:root {
+  --paper: #fafaf8; --ink: #1d2430; --muted: #5b6473; --rule: #e1e4ea; --panel: #f1f3f6;
+  --accent: #24467a; --accent-soft: #e6ecf6; --ok: #1f7a45; --warn: #9a5b00;
+  --display: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #13161c; --ink: #e5e8ee; --muted: #9aa3b2; --rule: #2a303b; --panel: #1b1f27;
+  --accent: #93b2e8; --accent-soft: #1f2a3f; --ok: #6fd39a; --warn: #f0b860; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #13161c; --ink: #e5e8ee; --muted: #9aa3b2; --rule: #2a303b; --panel: #1b1f27;
+  --accent: #93b2e8; --accent-soft: #1f2a3f; --ok: #6fd39a; --warn: #f0b860; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.6 var(--body); }
+a { color: var(--accent); text-underline-offset: 2px; }
+.doc a { overflow-wrap: anywhere; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.shell { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 3rem; max-width: 76rem; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 2.5rem 4rem; }
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 1.5rem); align-self: start; display: flex; flex-direction: column; gap: 1.25rem; }
+.brand { font-family: var(--display); font-size: 1.15rem; font-weight: 600; line-height: 1.25; color: var(--ink); text-decoration: none; }
+.brand small { display: block; font-family: var(--body); font-size: .78rem; font-weight: 400; color: var(--muted); margin-top: .25rem; }
+.toc { display: flex; flex-direction: column; gap: 2px; }
+.toc a, .toc button { display: block; text-align: left; padding: .38rem .6rem; border-radius: 6px; border: 0; background: none; font: 500 .9rem/1.35 var(--body); color: var(--muted); text-decoration: none; cursor: pointer; }
+.toc a:hover, .toc button:hover { color: var(--ink); background: var(--panel); }
+.toc [aria-current="page"] { color: var(--accent); background: var(--accent-soft); }
+.live { border-top: 1px solid var(--rule); padding-top: 1rem; display: flex; flex-direction: column; gap: .35rem; font-size: .85rem; }
+.live b { font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+main { min-width: 0; }
+.doc { max-width: 46rem; }
+.doc h1 { font: 600 clamp(1.8rem, 4vw, 2.4rem)/1.15 var(--display); margin: 0 0 1rem; text-wrap: balance; letter-spacing: -.01em; }
+.doc h2 { font: 600 1.45rem/1.25 var(--display); margin: 2.4rem 0 .6rem; padding-top: 1.2rem; border-top: 1px solid var(--rule); text-wrap: balance; }
+.doc h3 { font: 600 1.08rem/1.35 var(--body); margin: 1.8rem 0 .4rem; }
+.doc h4 { font: 600 1rem/1.35 var(--body); margin: 1.4rem 0 .3rem; color: var(--muted); }
+.doc p, .doc li { max-width: 68ch; }
+.doc ul, .doc ol { padding-left: 1.3rem; }
+.doc li { margin: .2rem 0; }
+.doc hr { border: 0; border-top: 1px solid var(--rule); margin: 2rem 0; }
+.doc blockquote { margin: 1rem 0; padding: .75rem 1rem; border-left: 3px solid var(--accent); background: var(--panel); border-radius: 0 6px 6px 0; }
+.doc blockquote p { margin: .4rem 0; }
+.doc code { font: .86em var(--mono); background: var(--panel); padding: .1em .35em; border-radius: 4px; overflow-wrap: anywhere; }
+.doc pre { background: var(--panel); padding: 1rem; border-radius: 8px; overflow-x: auto; }
+.doc pre code { background: none; padding: 0; overflow-wrap: normal; }
+.tw { overflow-x: auto; margin: 1rem 0 1.4rem; border: 1px solid var(--rule); border-radius: 8px; }
+.doc table { border-collapse: collapse; width: 100%; font-size: .9rem; font-variant-numeric: tabular-nums; }
+.doc th, .doc td { text-align: left; vertical-align: top; padding: .5rem .7rem; border-bottom: 1px solid var(--rule); }
+.doc th { background: var(--panel); font-weight: 600; font-size: .8rem; color: var(--muted); white-space: nowrap; }
+.doc tr:last-child td { border-bottom: 0; }
+.doc td.num { text-align: right; }
+.tag { display: inline-block; font-size: .75rem; font-weight: 600; padding: 0 .5rem; border-radius: 999px; background: var(--panel); color: var(--muted); }
+.tag-payment { background: var(--accent-soft); color: var(--accent); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 1rem; margin: 1.5rem 0 2rem; }
+.card { display: flex; flex-direction: column; gap: .3rem; padding: 1rem 1.1rem; border: 1px solid var(--rule); border-radius: 8px; text-decoration: none; color: var(--ink); background: var(--paper); }
+.card:hover { border-color: var(--accent); }
+.card strong { font: 600 1.05rem/1.3 var(--display); color: var(--accent); }
+.card span { color: var(--muted); font-size: .9rem; }
+.lede { font-size: 1.08rem; color: var(--muted); max-width: 62ch; }
+.foot { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: .82rem; color: var(--muted); }
+@media (max-width: 860px) {
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; padding-block: 1.25rem 3rem; }
+  .rail, main { min-width: 0; }
+  .rail { position: static; }
+  .toc { flex-direction: row; overflow-x: auto; gap: 4px; padding-bottom: 4px; }
+  .toc a, .toc button { white-space: nowrap; }
+  .live { flex-direction: row; flex-wrap: wrap; gap: .4rem 1rem; }
+  .live b { width: 100%; }
+}
+/* chart page */
+:root { --bar: #b7bfcc; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bar: #4a5366; } }
+:root[data-theme="dark"] { --bar: #4a5366; }
+.legend { display: flex; gap: 1.2rem; flex-wrap: wrap; font-size: .85rem; color: var(--muted); margin: .5rem 0; }
+.legend span { display: inline-flex; align-items: center; gap: .4rem; }
+.sw { width: 10px; height: 10px; border-radius: 2px; display: inline-block; background: var(--bar); }
+.sw.built { background: var(--accent); }
+.chart { position: relative; margin: .5rem 0 1.5rem; --gutter: 2.75rem; }
+.chart .plot { position: relative; }
+.chart .gridlayer { position: absolute; inset: 0 var(--gutter) 0 0; pointer-events: none; }
+.chart .gl { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--rule); }
+.chart .gl.axis { background: var(--muted); }
+.chart .rows { position: relative; display: flex; flex-direction: column; }
+.chart .row { padding: .35rem 0; border-radius: 6px; cursor: default; }
+.chart .row:hover, .chart .row:focus-visible { background: color-mix(in srgb, var(--panel) 70%, transparent); outline: none; }
+.chart .label { font-size: .88rem; font-weight: 500; color: var(--ink); margin-bottom: .25rem; padding-left: .35rem; }
+.chart .track { position: relative; height: 16px; margin-right: var(--gutter); }
+.chart .bar { position: absolute; left: 0; top: 0; height: 100%; min-width: 2px; border-radius: 0 4px 4px 0; background: var(--bar); }
+.chart .bar.built { background: var(--accent); }
+.chart .val { position: absolute; top: 50%; transform: translateY(-50%); margin-left: 6px; font-size: .82rem; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.chart .note { font-size: .82rem; color: var(--muted); padding-left: .35rem; }
+.chart .ticks { position: relative; height: 1.4rem; margin-right: var(--gutter); font-size: .75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.chart .ticks span { position: absolute; top: .3rem; transform: translateX(-50%); }
+.chart .ticks span:first-child { transform: none; }
+.chart .ticks span:last-child { transform: translateX(-100%); }
+.tip { position: absolute; pointer-events: none; background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.12); padding: .45rem .65rem; font-size: .82rem; min-width: 11rem; }
+.tip .t { color: var(--muted); font-weight: 600; margin-bottom: 2px; }
+.doc th small { font-weight: 400; }
+</style></head>
+<body><div class="shell"><aside class="rail"><a class="brand" href="index.html">AI Money Lab<small>Research and prototypes</small></a><nav class="toc" aria-label="Documents"><a href="index.html">Overview</a><a href="start.html">★ Start here</a><a href="report.html">Final report</a><a href="video.html">Video notes</a><a href="methods.html">The seven methods</a><a href="scorecard.html">Feasibility scorecard</a><a href="chart.html" aria-current="page">Scorecard chart</a><a href="picks.html">Recommendations</a><a href="plans.html">7-day plans</a><a href="outreach.html">Outreach templates</a><a href="tracker.html">Experiment tracker</a><a href="sources.html">Sources</a></nav><div class="live"><b>Live apps</b>
+<a href="https://repurpose-desk-flux.onrender.com" target="_blank" rel="noopener noreferrer">Repurpose Desk</a>
+<a href="https://site-makeover-kit.onrender.com" target="_blank" rel="noopener noreferrer">Site Makeover Kit</a>
+<a href="https://github.com/rubberly/ai-money-making-lab" target="_blank" rel="noopener noreferrer">GitHub repo</a></div></aside>
+<main><article class="doc"><h1>Scorecard chart</h1>
+<p class="lede"><b>Content repurposing</b> scores highest at <b>78</b> out of 100, 10 points ahead of <b>Website makeovers</b>. The video never reveals method 7, so it has no score.</p>
+<h2>Weighted score by method</h2>
+<p>Out of 100. Higher is better for a beginner. Hover or tap a row for startup cost and time to first customer.</p>
+<div class="legend"><span><i class="sw built"></i>Prototype built</span><span><i class="sw"></i>Not built</span></div>
+<figure class="chart" id="chart"><div class="plot"><div class="gridlayer" aria-hidden="true"><span class="gl axis" style="left:0%"></span><span class="gl" style="left:25%"></span><span class="gl" style="left:50%"></span><span class="gl" style="left:75%"></span><span class="gl" style="left:100%"></span></div><div class="rows" role="list" aria-label="Weighted score by method, out of 100"><div class="row" tabindex="0" role="listitem" data-tip="Content repurposing|Score: 78 / 100|Startup cost: $0 ($20/mo optional)|First customer: 1–3 weeks|Prototype: Repurpose Desk" aria-label="Content repurposing: 78 out of 100"><div class="label">Content repurposing</div><div class="track"><span class="bar built" style="width:78%"></span><span class="val" style="left:78%">78</span></div></div><div class="row" tabindex="0" role="listitem" data-tip="Website makeovers|Score: 68 / 100|Startup cost: $0 (free hosting)|First customer: 2–4 weeks|Prototype: Site Makeover Kit" aria-label="Website makeovers: 68 out of 100"><div class="label">Website makeovers</div><div class="track"><span class="bar built" style="width:68%"></span><span class="val" style="left:68%">68</span></div></div><div class="row" tabindex="0" role="listitem" data-tip="Support chatbots|Score: 63.5 / 100|Startup cost: $0–40/mo|First customer: 2–4 weeks" aria-label="Support chatbots: 63.5 out of 100"><div class="label">Support chatbots</div><div class="track"><span class="bar" style="width:63.5%"></span><span class="val" style="left:63.5%">63.5</span></div></div><div class="row" tabindex="0" role="listitem" data-tip="Listing photo &amp; video makeovers|Score: 63 / 100|Startup cost: $15–40/mo|First customer: 1–2 weeks" aria-label="Listing photo &amp; video makeovers: 63 out of 100"><div class="label">Listing photo &amp; video makeovers</div><div class="track"><span class="bar" style="width:63%"></span><span class="val" style="left:63%">63</span></div></div><div class="row" tabindex="0" role="listitem" data-tip="Dead-lead reactivation|Score: 54.5 / 100|Startup cost: $150–250/mo|First customer: 3–6 weeks" aria-label="Dead-lead reactivation: 54.5 out of 100"><div class="label">Dead-lead reactivation</div><div class="track"><span class="bar" style="width:54.5%"></span><span class="val" style="left:54.5%">54.5</span></div></div><div class="row" tabindex="0" role="listitem" data-tip="AI UGC ads|Score: 50.5 / 100|Startup cost: $39–110/mo|First customer: 4+ weeks" aria-label="AI UGC ads: 50.5 out of 100"><div class="label">AI UGC ads</div><div class="track"><span class="bar" style="width:50.5%"></span><span class="val" style="left:50.5%">50.5</span></div></div><div class="row" tabindex="0" role="listitem" data-tip="Unrevealed method 7|Not scored|Startup cost: unknown|First customer: unknown" aria-label="Unrevealed method 7: not scored"><div class="label">Unrevealed method 7</div><div class="note">Not scored: never revealed in the video</div></div></div></div><div class="ticks" aria-hidden="true"><span style="left:0%">0</span><span style="left:25%">25</span><span style="left:50%">50</span><span style="left:75%">75</span><span style="left:100%">100</span></div><div class="tip" id="tip" hidden></div></figure>
+<h2>Score breakdown</h2>
+<p>Each category is scored 1–10, where higher is more favourable (cheaper, faster, less risky). The weight is under each heading. Total = each score × its weight, added up, × 10.</p>
+<div class="tw"><table><thead><tr><th>Method</th><th class="num">Low cost<br><small>15%</small></th><th class="num">Beginner<br><small>15%</small></th><th class="num">Speed<br><small>15%</small></th><th class="num">Demand<br><small>15%</small></th><th class="num">Profit / effort<br><small>15%</small></th><th class="num">Easy to build<br><small>10%</small></th><th class="num">Automatable<br><small>10%</small></th><th class="num">Low risk<br><small>5%</small></th><th class="num">Total<br><small>/100</small></th></tr></thead><tbody>
+<tr><td>Content repurposing</td><td class="num">9</td><td class="num">8</td><td class="num">7</td><td class="num">7</td><td class="num">7</td><td class="num">9</td><td class="num">8</td><td class="num">8</td><td class="num"><b>78</b></td></tr>
+<tr><td>Website makeovers</td><td class="num">8</td><td class="num">6</td><td class="num">6</td><td class="num">7</td><td class="num">6</td><td class="num">9</td><td class="num">6</td><td class="num">7</td><td class="num"><b>68</b></td></tr>
+<tr><td>Support chatbots</td><td class="num">7</td><td class="num">7</td><td class="num">6</td><td class="num">6</td><td class="num">5</td><td class="num">7</td><td class="num">8</td><td class="num">4</td><td class="num"><b>63.5</b></td></tr>
+<tr><td>Listing photo &amp; video makeovers</td><td class="num">7</td><td class="num">8</td><td class="num">7</td><td class="num">6</td><td class="num">5</td><td class="num">6</td><td class="num">6</td><td class="num">3</td><td class="num"><b>63</b></td></tr>
+<tr><td>Dead-lead reactivation</td><td class="num">4</td><td class="num">4</td><td class="num">5</td><td class="num">7</td><td class="num">7</td><td class="num">5</td><td class="num">8</td><td class="num">2</td><td class="num"><b>54.5</b></td></tr>
+<tr><td>AI UGC ads</td><td class="num">5</td><td class="num">3</td><td class="num">4</td><td class="num">7</td><td class="num">6</td><td class="num">5</td><td class="num">7</td><td class="num">2</td><td class="num"><b>50.5</b></td></tr>
+<tr><td>Unrevealed method 7</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num"><b>—</b></td></tr>
+</tbody></table></div>
+<h2>Cost and timing</h2>
+<p>Estimates from the research, not promises.</p>
+<div class="tw"><table><thead><tr><th>Method</th><th>Video time</th><th>Video's tier</th><th>Startup cost</th><th>First customer</th><th>Prototype</th></tr></thead><tbody>
+<tr><td>Content repurposing</td><td>05:00</td><td>A</td><td>$0 ($20/mo optional)</td><td>1–3 weeks</td><td>Repurpose Desk</td></tr>
+<tr><td>Website makeovers</td><td>13:46</td><td>B/C</td><td>$0 (free hosting)</td><td>2–4 weeks</td><td>Site Makeover Kit</td></tr>
+<tr><td>Support chatbots</td><td>21:23</td><td>B</td><td>$0–40/mo</td><td>2–4 weeks</td><td>—</td></tr>
+<tr><td>Listing photo &amp; video makeovers</td><td>00:51</td><td>B</td><td>$15–40/mo</td><td>1–2 weeks</td><td>—</td></tr>
+<tr><td>Dead-lead reactivation</td><td>09:55</td><td>B</td><td>$150–250/mo</td><td>3–6 weeks</td><td>—</td></tr>
+<tr><td>AI UGC ads</td><td>17:48</td><td>A</td><td>$39–110/mo</td><td>4+ weeks</td><td>—</td></tr>
+<tr><td>Unrevealed method 7</td><td>24:46</td><td>S</td><td>unknown</td><td>unknown</td><td>—</td></tr>
+</tbody></table></div>
+<script>
+(function () {
+  var fig = document.getElementById('chart'), tip = document.getElementById('tip');
+  function show(row, cx, cy) {
+    var parts = row.getAttribute('data-tip').split('|');
+    tip.replaceChildren();
+    parts.forEach(function (p, i) { var d = document.createElement('div'); if (i === 0) d.className = 't'; d.textContent = p; tip.appendChild(d); });
+    tip.hidden = false;
+    var b = fig.getBoundingClientRect(), left = cx - b.left + 14, topPx = cy - b.top + 14;
+    if (left + tip.offsetWidth > b.width) left = Math.max(0, cx - b.left - tip.offsetWidth - 14);
+    if (topPx + tip.offsetHeight > b.height) topPx = Math.max(0, cy - b.top - tip.offsetHeight - 14);
+    tip.style.left = left + 'px'; tip.style.top = topPx + 'px';
+  }
+  fig.querySelectorAll('.row').forEach(function (row) {
+    row.addEventListener('mousemove', function (e) { show(row, e.clientX, e.clientY); });
+    row.addEventListener('mouseleave', function () { tip.hidden = true; });
+    row.addEventListener('focus', function () { var r = row.getBoundingClientRect(); show(row, r.left + 40, r.top + 10); });
+    row.addEventListener('blur', function () { tip.hidden = true; });
+  });
+})();
+</script><p class="foot">Source: <code>research/scorecard.csv</code></p></article></main></div></body></html>

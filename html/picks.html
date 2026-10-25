@@ -18,6 +18,7 @@
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.6 var(--body); }
 a { color: var(--accent); text-underline-offset: 2px; }
+.doc a { overflow-wrap: anywhere; }
 a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
 .shell { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 3rem; max-width: 76rem; margin: 0 auto;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 2.5rem 4rem; }
@@ -61,18 +62,47 @@ main { min-width: 0; }
 .lede { font-size: 1.08rem; color: var(--muted); max-width: 62ch; }
 .foot { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: .82rem; color: var(--muted); }
 @media (max-width: 860px) {
-  .shell { grid-template-columns: 1fr; gap: 1.5rem; padding-block: 1.25rem 3rem; }
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; padding-block: 1.25rem 3rem; }
+  .rail, main { min-width: 0; }
   .rail { position: static; }
   .toc { flex-direction: row; overflow-x: auto; gap: 4px; padding-bottom: 4px; }
   .toc a, .toc button { white-space: nowrap; }
   .live { flex-direction: row; flex-wrap: wrap; gap: .4rem 1rem; }
   .live b { width: 100%; }
 }
+/* chart page */
+:root { --bar: #b7bfcc; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bar: #4a5366; } }
+:root[data-theme="dark"] { --bar: #4a5366; }
+.legend { display: flex; gap: 1.2rem; flex-wrap: wrap; font-size: .85rem; color: var(--muted); margin: .5rem 0; }
+.legend span { display: inline-flex; align-items: center; gap: .4rem; }
+.sw { width: 10px; height: 10px; border-radius: 2px; display: inline-block; background: var(--bar); }
+.sw.built { background: var(--accent); }
+.chart { position: relative; margin: .5rem 0 1.5rem; --gutter: 2.75rem; }
+.chart .plot { position: relative; }
+.chart .gridlayer { position: absolute; inset: 0 var(--gutter) 0 0; pointer-events: none; }
+.chart .gl { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--rule); }
+.chart .gl.axis { background: var(--muted); }
+.chart .rows { position: relative; display: flex; flex-direction: column; }
+.chart .row { padding: .35rem 0; border-radius: 6px; cursor: default; }
+.chart .row:hover, .chart .row:focus-visible { background: color-mix(in srgb, var(--panel) 70%, transparent); outline: none; }
+.chart .label { font-size: .88rem; font-weight: 500; color: var(--ink); margin-bottom: .25rem; padding-left: .35rem; }
+.chart .track { position: relative; height: 16px; margin-right: var(--gutter); }
+.chart .bar { position: absolute; left: 0; top: 0; height: 100%; min-width: 2px; border-radius: 0 4px 4px 0; background: var(--bar); }
+.chart .bar.built { background: var(--accent); }
+.chart .val { position: absolute; top: 50%; transform: translateY(-50%); margin-left: 6px; font-size: .82rem; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.chart .note { font-size: .82rem; color: var(--muted); padding-left: .35rem; }
+.chart .ticks { position: relative; height: 1.4rem; margin-right: var(--gutter); font-size: .75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.chart .ticks span { position: absolute; top: .3rem; transform: translateX(-50%); }
+.chart .ticks span:first-child { transform: none; }
+.chart .ticks span:last-child { transform: translateX(-100%); }
+.tip { position: absolute; pointer-events: none; background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.12); padding: .45rem .65rem; font-size: .82rem; min-width: 11rem; }
+.tip .t { color: var(--muted); font-weight: 600; margin-bottom: 2px; }
+.doc th small { font-weight: 400; }
 </style></head>
-<body><div class="shell"><aside class="rail"><a class="brand" href="index.html">AI Money Lab<small>Research and prototypes</small></a><nav class="toc" aria-label="Documents"><a href="index.html">Overview</a><a href="start.html">★ Start here</a><a href="report.html">Final report</a><a href="video.html">Video notes</a><a href="methods.html">The seven methods</a><a href="scorecard.html">Feasibility scorecard</a><a href="picks.html" aria-current="page">Recommendations</a><a href="plans.html">7-day plans</a><a href="outreach.html">Outreach templates</a><a href="tracker.html">Experiment tracker</a><a href="sources.html">Sources</a></nav><div class="live"><b>Live apps</b>
+<body><div class="shell"><aside class="rail"><a class="brand" href="index.html">AI Money Lab<small>Research and prototypes</small></a><nav class="toc" aria-label="Documents"><a href="index.html">Overview</a><a href="start.html">★ Start here</a><a href="report.html">Final report</a><a href="video.html">Video notes</a><a href="methods.html">The seven methods</a><a href="scorecard.html">Feasibility scorecard</a><a href="chart.html">Scorecard chart</a><a href="picks.html" aria-current="page">Recommendations</a><a href="plans.html">7-day plans</a><a href="outreach.html">Outreach templates</a><a href="tracker.html">Experiment tracker</a><a href="sources.html">Sources</a></nav><div class="live"><b>Live apps</b>
 <a href="https://repurpose-desk-flux.onrender.com" target="_blank" rel="noopener noreferrer">Repurpose Desk</a>
 <a href="https://site-makeover-kit.onrender.com" target="_blank" rel="noopener noreferrer">Site Makeover Kit</a>
-<a href="https://claude.ai/artifact/CdEKPZyz5YMNcks6iPKq8t" target="_blank" rel="noopener noreferrer">Scorecard chart</a>
 <a href="https://github.com/rubberly/ai-money-making-lab" target="_blank" rel="noopener noreferrer">GitHub repo</a></div></aside>
 <main><article class="doc"><h1>Which opportunities to prototype, and why</h1>
 <p>I selected <strong>two</strong>, not three. Content repurposing is clearly the strongest. Website makeovers is a distinct second, and software genuinely changes how well it works. Chatbots (#3) and listing makeovers (#4) don&#39;t need custom software: the SaaS tools already <em>are</em> the product. So building for them would have been building for its own sake.</p>
